@@ -1,0 +1,26 @@
+:root
+  --cursor-pointer url('src/assets/icon/pointer.svg') 5 5,auto
+  --cursor-pointing url('src/assets/icon/pointing.svg') 5 5,auto
+*
+  user-select none
+  //&::-webkit-scrollbar-track
+  //  background-color transparent
+  &::-webkit-scrollbar
+    width 8px
+    background-color transparent
+  &::-webkit-scrollbar-thumb
+    border-radius 4px
+    background rgba(165,222,228,.6)
+  //&::-webkit-scrollbar-corner
+  //  background-color: transparent
+
+body
+  padding 0
+  margin 0
+  cursor var(--cursor-pointer)
+  #app
+    height 100vh
+    width 100vw
+    overflow auto
+    display flex
+    flex-direction column
