@@ -1,7 +1,7 @@
 import { access, constants, readdirSync, createReadStream, readFile } from 'node:fs'
 import { extname, join } from 'node:path'
 import { parseNodeStream } from 'music-metadata-browser'
-import Store from 'electron-store'
+
 const getAccess = async (path) => {
   return new Promise((resolve) => {
     access(path, constants.R_OK | constants.W_OK, (err) =>
@@ -84,7 +84,7 @@ export const scanMusicByPath = async (dirPath, deep = false) => {
   for (const item of list) {
     map.items[item.path] = {
       ...item,
-      musicInfo: await getMusicInfo(item.path)
+      ...(await getMusicInfo(item.path))
     }
   }
   return map
@@ -95,14 +95,4 @@ export const getPlayUrl = async (path) => {
       resolve(data)
     })
   })
-}
-const configStore = new Store({
-  name: 'config',
-  clearInvalidConfig: true
-})
-export const getStorageMusicInfo = async () => {
-  return configStore.get('musicInfo')
-}
-export const setStorageMusicInfo = (musicInfo) => {
-  return configStore.set('musicInfo', musicInfo)
 }

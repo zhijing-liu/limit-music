@@ -2,9 +2,6 @@ import { app, shell, BrowserWindow, screen, ipcMain, dialog } from 'electron'
 import { join } from 'node:path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import Store from 'electron-store'
-
-Store.initRenderer() // 初始化Store
 async function createWindow() {
   const mainWindow = new BrowserWindow({
     width: screen.getPrimaryDisplay().workAreaSize.width * 0.75,

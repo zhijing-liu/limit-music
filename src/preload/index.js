@@ -1,12 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import {
-  getDirAccessibility,
-  getPlayUrl,
-  getStorageMusicInfo,
-  scanMusicByPath,
-  setStorageMusicInfo
-} from './fs'
+import { getDirAccessibility, getPlayUrl, scanMusicByPath } from './fs'
+
 contextBridge.exposeInMainWorld('electron', electronAPI)
 contextBridge.exposeInMainWorld('underlying', {
   closeWindow: () => {
@@ -23,7 +18,5 @@ contextBridge.exposeInMainWorld('underlying', {
   },
   getDirAccessibility,
   scanMusicByPath,
-  getPlayUrl,
-  getStorageMusicInfo,
-  setStorageMusicInfo
+  getPlayUrl
 })

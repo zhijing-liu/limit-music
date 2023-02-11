@@ -49,7 +49,7 @@ const routerPush = (item) => {
   display flex
   #leftBarBody
     flex 1 0 0
-    margin 10px 5px
+    margin 0 5px
     background-color rgba(144,144,144,.05)
     border-radius 15px
     display flex

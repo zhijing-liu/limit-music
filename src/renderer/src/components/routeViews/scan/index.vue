@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { nextTick, onBeforeMount, ref } from 'vue'
+import { nextTick, onBeforeMount, ref, toRaw } from 'vue'
 import amazedImage from '@/assets/img/amazed.png'
 import dirIcon from '@/assets/icon/dir.svg'
 import deleteIcon from '@/assets/icon/delete.svg'
@@ -92,12 +92,10 @@ const startScan = async () => {
 }
 const addToPlayList = () => {
   let listMap = {}
-  for (const { items } of Object.values(scanResultMap.value)) {
+  for (const { items } of Object.values(toRaw(scanResultMap.value))) {
     listMap = { ...listMap, ...items }
   }
-  console.log(listMap)
-  getControllerStore.musicMap = listMap
-  window.underlying.setStorageMusicInfo(JSON.parse(JSON.stringify(listMap)))
+  getControllerStore.setMusicMap(listMap)
 }
 </script>
 

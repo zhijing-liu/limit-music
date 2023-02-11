@@ -10,15 +10,19 @@ Transition(name="fade")
 import { onBeforeMount, onMounted } from 'vue'
 import { controllerStore, componentVisibleStore } from '@/store'
 import logoImage from '@/assets/logo.png'
+import { useRouter } from 'vue-router'
+
 const getControllerStore = controllerStore()
 const getComponentVisibleStore = componentVisibleStore()
+const router = useRouter()
 onMounted(async () => {
-  getControllerStore.musicMap = await window.underlying.getStorageMusicInfo()
-})
-onBeforeMount(() => {
   setTimeout(() => {
     getComponentVisibleStore.curtainVisible = false
   }, 2000)
+})
+onBeforeMount(() => {
+  getControllerStore.refreshMusicMap()
+  router.push({ name: 'main' })
 })
 </script>
 
