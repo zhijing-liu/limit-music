@@ -1,6 +1,5 @@
 <template lang="pug">
 #scanPage
-
   .setScanDirList(:class="{empty:dirList.length===0}")
     .emptyInfo(v-if="dirList.length===0")
       img.icon(:src="amazedImage")
@@ -12,15 +11,48 @@
       img.icon.button(:src="deleteIcon" @click="()=>removeDir(dir)")
   .buttons
     .button.setScanDirButton(@click="addDir") 添加文件夹
-    .button.scanButton(@click="startScan") 开始扫描
+    .button.scanButton(@click="startScan" :class="{disabled:scanning}") {{scanning?'扫描中。。。':'开始扫描'}}
+  Transition(name="fade")
+    .scanResult(v-if="scanResultPopVisible")
+      .title 扫描结果
+      img.closeButton(:src="closeImage" @click="scanResultPopVisible=!scanResultPopVisible")
+      .list
+        .group(v-for="(result,path) in scanResultMap")
+          .groupName(@click="result.display=!result.display")
+            img.icon(:src="dirIcon")
+            .label
+              .path {{path}}
+              .info {{result.length===0?'这个真的不是一个空文件夹么?':`发现 ${result.length} 首哦!`}}
+          .emptyInfo(v-if="result.length===0" v-show="result.display")
+            img.icon(:src="helpImage")
+            .label 啊！怎么是空哒。。。
+          .items(v-show="result.display" v-else )
+            .item(v-for="item in result.items" :key="item.path")
+              img.icon(:src="musicTypeSrcMap[item.suffix]")
+              .name {{item.fileName}}
+      .submitButton(@click="addToPlayList") 好吧，就是这些啦!
 </template>
 
 <script setup>
-import { onBeforeMount, onBeforeUnmount, nextTick, ref } from 'vue'
+import { nextTick, onBeforeMount, ref } from 'vue'
 import amazedImage from '@/assets/img/amazed.png'
 import dirIcon from '@/assets/icon/dir.svg'
 import deleteIcon from '@/assets/icon/delete.svg'
 import waitingIcon from '@/assets/icon/waiting.svg'
+import flacImage from '@/assets/img/flac.png'
+import mp3Image from '@/assets/img/mp3.png'
+import wavImage from '@/assets/img/wav.png'
+import closeImage from '@/assets/img/close.png'
+import helpImage from '@/assets/img/help.png'
+import { audio } from '@/methods'
+import { controllerStore } from '@/store'
+
+const musicTypeSrcMap = {
+  '.flac': flacImage,
+  '.mp3': mp3Image,
+  '.wav': wavImage
+}
+const getControllerStore = controllerStore()
 const dirList = ref([])
 onBeforeMount(async () => {
   dirList.value = await getDirAccessibility(JSON.parse(localStorage.getItem('dirList') ?? '[]'))
@@ -38,41 +70,44 @@ const removeDir = (dir) => {
   dirList.value = dirList.value.filter(({ path }) => path !== dir.path)
 }
 const activePath = ref('')
+const scanning = ref(false) // 扫描中状态
+const scanResultPopVisible = ref(false)
+const scanResultMap = ref({})
 const startScan = async () => {
-  const list = dirList.value.filter((item) => item.access)
-  const promise = new Promise((resolve) => {
-    if (list.length > 0) {
-      let result = []
-      let i = 0
-      const getData = () => {
-        activePath.value = list[i].path
-        i++
-        window.underlying.scanMusicByPath(activePath.value).then((r) => {
-          result = [...result, ...r]
-          if (list.length !== i) {
-            nextTick(() => {
-              getData()
-            })
-          } else {
-            activePath.value = ''
-            resolve(result)
-          }
-        })
-      }
-      getData()
+  scanning.value = true
+  scanResultMap.value = await audio.scanByPathList(
+    dirList.value.filter((item) => item.access),
+    (path) => {
+      activePath.value = path
+    },
+    () => {
+      activePath.value = ''
     }
-  })
-  promise.then((data) => {
-    console.log(data)
-  })
+  )
+  for (const path in scanResultMap.value) {
+    scanResultMap.value[path].display = true
+  }
+  scanning.value = false
+  scanResultPopVisible.value = true
+}
+const addToPlayList = () => {
+  let listMap = {}
+  for (const { items } of Object.values(scanResultMap.value)) {
+    listMap = { ...listMap, ...items }
+  }
+  console.log(listMap)
+  getControllerStore.musicMap = listMap
+  window.underlying.setStorageMusicInfo(JSON.parse(JSON.stringify(listMap)))
 }
 </script>
 
 <style scoped lang="stylus">
 #scanPage
+  position relative
   flex 1
   overflow auto
   display flex
+  flex-direction column
   align-items center
   justify-content center
   .buttons
@@ -89,6 +124,10 @@ const startScan = async () => {
       letter-spacing 5px
       cursor var(--cursor-pointing)
       margin 0 10px
+    .button.disabled
+      opacity 0.8
+      cursor var(--cursor-noPointer)
+      pointer-events none
     .setScanDirButton
       background-color rgba(134,193,102,.3)
       &:hover
@@ -152,4 +191,99 @@ const startScan = async () => {
 
   .setScanDirList.empty
     justify-content center
+  .scanResult
+    position absolute
+    width 60%
+    height 80%
+    background-color #FFFFFF
+    box-shadow 0 0 80px 10px rgba(245,150,170,.3)
+    border-radius 30px
+    display flex
+    flex-direction column
+    padding 20px
+    .title
+      height 25px
+      font-size 18px
+      font-weight bold
+      display flex
+      justify-content center
+      align-items center
+      padding 5px 0 15px
+    .list
+      flex 1 0 0
+      overflow auto
+      display flex
+      flex-direction column
+      &::-webkit-scrollbar
+        width 0
+      .group
+        display flex
+        flex-direction column
+        .groupName
+          display flex
+          font-size 13px
+          font-weight 1000
+          background-color rgba(181,202,160,.2)
+          padding 10px
+          cursor var(--cursor-pointing)
+          align-items center
+          .icon
+            height 25px
+            padding-right 20px
+        .items
+          padding 10px 5px 10px 15px
+          .item
+            height 40px
+            display flex
+            align-items center
+            .icon
+              height 25px
+              padding-right 20px
+            .name
+              flex 1 0 0
+              padding-right 10px
+              font-size 14px
+              overflow hidden
+              white-space nowrap
+              text-overflow ellipsis
+        .emptyInfo
+          display flex
+          justify-content center
+          align-items center
+          padding 10px
+          .icon
+            height 60px
+            width 60px
+            padding 0 10px
+          .label
+            font-size 15px
+            font-weight bolder
+            padding 5px
+    .closeButton
+      position absolute
+      right 15px
+      top 15px
+      height 25px
+      width 25px
+      //padding 5px
+      border-radius 3px
+      cursor var(--cursor-pointing)
+      &:hover
+        background-color rgba(245,150,170,0.5)
+        box-shadow 0 0 15px 5px rgba(245,150,170,0.5)
+    .submitButton
+      margin-top 15px
+      width 140px
+      height 40px
+      background-color rgba(120,194,196,.2)
+      align-self center
+      font-size 13px
+      font-weight bolder
+      display flex
+      justify-content center
+      align-items center
+      border-radius 8px
+      &:hover
+        cursor var(--cursor-pointing)
+        background-color rgba(120,194,196,.4)
 </style>
