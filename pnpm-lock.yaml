@@ -19,7 +19,6 @@ specifiers:
   eslint-plugin-n: ^15.5.1
   eslint-plugin-promise: ^6.1.1
   eslint-plugin-vue: ^9.8.0
-  howler: ^2.2.3
   music-metadata-browser: ^2.5.9
   pinia: ^2.0.30
   prettier: ^2.8.2
@@ -34,7 +33,6 @@ dependencies:
   '@electron-toolkit/utils': registry.npmmirror.com/@electron-toolkit/utils/1.0.2_electron@21.4.1
   dexie: 3.2.3
   electron-updater: registry.npmmirror.com/electron-updater/5.3.0
-  howler: registry.npmmirror.com/howler/2.2.3
   music-metadata-browser: registry.npmmirror.com/music-metadata-browser/2.5.9
   pinia: 2.0.30_vue@3.2.47
   vue-router: registry.npmmirror.com/vue-router/4.1.6_vue@3.2.47
@@ -3114,12 +3112,6 @@ packages:
     dependencies:
       lru-cache: registry.npmmirror.com/lru-cache/6.0.0
     dev: true
-
-  registry.npmmirror.com/howler/2.2.3:
-    resolution: {integrity: sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/howler/-/howler-2.2.3.tgz}
-    name: howler
-    version: 2.2.3
-    dev: false
 
   registry.npmmirror.com/http-cache-semantics/4.1.1:
     resolution: {integrity: sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/http-cache-semantics/-/http-cache-semantics-4.1.1.tgz}

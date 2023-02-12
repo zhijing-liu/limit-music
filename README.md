@@ -1,34 +1,30 @@
 # limit-music
 
-An Electron application with Vue
+### 这是一个使用Electron 开发的桌面端app
 
-## Recommended IDE Setup
+### Install / 安装
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-## Project Setup
-
-### Install
+* 推荐使用pnpm进行安装
 
 ```bash
-$ npm install
+$ pnpm install
 ```
 
-### Development
+### Development / 开发
 
 ```bash
-$ npm run dev
+$ pnpm dev
 ```
 
-### Build
+### Build / 打包
 
 ```bash
 # For windows
-$ npm run build:win
+$ pnpm build:win
 
 # For macOS
-$ npm run build:mac
+$ pnpm build:mac
 
 # For Linux
-$ npm run build:linux
+$ pnpm build:linux
 ```
