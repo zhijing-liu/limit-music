@@ -15,35 +15,32 @@
               .label {{item.label}}
                 Warning(v-if="item.warning" :info="item.warning")
               Switch(v-model:active="item.value")
-
 </template>
 
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import scanIcon from '@/assets/icon/scan.svg'
 import listIcon from '@/assets/icon/list.svg'
-import settingImage from '@/assets/img/setting.png'
+import windowIcon from '@/assets/img/window.png'
 import Switch from '@/components/components/switch.vue'
 import Warning from '@/components/components/warning.vue'
 import { settingStore } from '@/store'
-// import warningImage from '@/assets/img/warning.png'
-// import { useRoute } from 'vue-router'
-const tabKey = ref('scan')
-// const route = useRoute()
+
+const tabKey = ref('window')
 const getSettingStore = settingStore()
 const settingGroups = reactive({
-  scan: {
-    title: '扫描',
-    icon: scanIcon,
+  window: {
+    title: '窗口',
+    icon: windowIcon,
     items: [
       {
-        label: '深度检索',
+        label: '点击关闭后最小化到托盘',
         value: computed({
-          get: () => getSettingStore.deepScan,
-          set: (v) => (getSettingStore.deepScan = v)
+          get: () => getSettingStore.toTrayWhenClickClose,
+          set: (v) => (getSettingStore.toTrayWhenClickClose = v)
         }),
         type: 'switch',
-        warning: '深度检索可能会增加检索时间'
+        warning: '托盘支持后台播放'
       }
     ]
   },
@@ -58,6 +55,21 @@ const settingGroups = reactive({
           set: (v) => (getSettingStore.playImmediate = v)
         }),
         type: 'switch'
+      }
+    ]
+  },
+  scan: {
+    title: '扫描',
+    icon: scanIcon,
+    items: [
+      {
+        label: '深度检索',
+        value: computed({
+          get: () => getSettingStore.deepScan,
+          set: (v) => (getSettingStore.deepScan = v)
+        }),
+        type: 'switch',
+        warning: '深度检索可能会增加检索时间'
       }
     ]
   }

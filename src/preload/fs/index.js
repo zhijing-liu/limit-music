@@ -37,6 +37,7 @@ export const getMusicInfo = async (
     description: fileInfo.common.comment,
     artists: fileInfo.common.artists,
     album: fileInfo.common.album,
+    duration: fileInfo.format.duration,
     path
   }
   if (lyric) {

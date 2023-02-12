@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld('underlying', {
   minWindow: () => {
     return ipcRenderer.invoke('minWindow')
   },
+  hideWindow: () => {
+    return ipcRenderer.invoke('hideWindow')
+  },
   openDirSelector: async () => {
     return (await ipcRenderer.invoke('openDirSelector')) ?? []
   },

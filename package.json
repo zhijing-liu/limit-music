@@ -1,6 +1,6 @@
 {
   "name": "limit-music",
-  "version": "0.0.3-alpha",
+  "version": "0.0.4-alpha",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -17,6 +17,7 @@
     "build:linux": "npm run build && electron-builder --linux --config"
   },
   "build": {
+    "productName": "limit 音乐",
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,

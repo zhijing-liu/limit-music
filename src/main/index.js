@@ -1,9 +1,24 @@
-import { app, shell, BrowserWindow, screen, ipcMain, dialog } from 'electron'
+import {
+  app,
+  shell,
+  BrowserWindow,
+  screen,
+  ipcMain,
+  dialog,
+  Tray,
+  Menu,
+  Notification,
+  globalShortcut
+} from 'electron'
 import { join } from 'node:path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import logo from '../../resources/logo.png?asset'
+import icon from '../../build/icon.png?asset'
+
+let tray
+let mainWindow
 async function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: screen.getPrimaryDisplay().workAreaSize.width * 0.75,
     height: screen.getPrimaryDisplay().workAreaSize.height * 0.75,
     minWidth: 800,
@@ -22,20 +37,55 @@ async function createWindow() {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
-
+  tray = new Tray(icon)
+  tray.addListener('click', () => {
+    mainWindow.show()
+  })
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      {
+        label: '打开',
+        click: () => {
+          mainWindow.show()
+        }
+      },
+      {
+        label: '重新加载',
+        click: focusAndPerform('reload')
+      },
+      {
+        label: '清空缓存重新加载',
+        click: focusAndPerform('reloadIgnoringCache')
+      },
+      {
+        label: '开发者选项',
+        click: () => {
+          mainWindow.webContents.isDevToolsOpened()
+            ? mainWindow.webContents.closeDevTools()
+            : mainWindow.webContents.openDevTools()
+        }
+      },
+      {
+        label: '全屏',
+        accelerator: 'esc',
+        click: () => {
+          mainWindow.setFullScreen(!mainWindow.isFullScreen())
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: '退出',
+        role: 'quit'
+      }
+    ])
+  )
+  // 给托盘图标设置气球提示
+  tray.setToolTip('limit-music')
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
-  })
-  ipcMain.handle('maxWindow', () => {
-    if (mainWindow.isMaximized()) {
-      mainWindow.restore()
-    } else {
-      mainWindow.maximize()
-    }
-  })
-  ipcMain.handle('minWindow', () => {
-    mainWindow.minimize()
   })
   if (is.dev && process.env.ELECTRON_RENDERER_URL) {
     await mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
@@ -43,7 +93,12 @@ async function createWindow() {
     await mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
-
+const focusAndPerform = (methodName) => {
+  return (menuItem) => {
+    mainWindow.webContents.focus()
+    mainWindow.webContents[methodName]?.()
+  }
+}
 app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.electron')
 
@@ -56,6 +111,9 @@ app.whenReady().then(async () => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+  globalShortcut.register('Escape', () => {
+    mainWindow.setFullScreen(false)
+  })
 })
 
 app.on('window-all-closed', () => {
@@ -65,6 +123,26 @@ app.on('window-all-closed', () => {
 })
 ipcMain.handle('closeWindow', () => {
   app.quit()
+})
+ipcMain.handle('maxWindow', () => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.restore()
+  } else {
+    mainWindow.maximize()
+  }
+})
+ipcMain.handle('minWindow', () => {
+  mainWindow.minimize()
+})
+
+ipcMain.handle('hideWindow', () => {
+  // 最小化到托盘
+  mainWindow.hide()
+  const notification = new Notification({
+    title: 'limit 音乐',
+    body: '应用程序已最小化到托盘'
+  })
+  notification.show()
 })
 ipcMain.handle('openDirSelector', () => {
   return dialog.showOpenDialogSync({

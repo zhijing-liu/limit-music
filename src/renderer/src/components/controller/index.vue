@@ -9,8 +9,9 @@
     img.icon(:src="lastImage")
   .musicName
     .musicNameText {{musicInfo.title??'嗨！欢迎回来'}}
-    .musicNameSubtitle -- {{musicInfo.artists?.join(' ')??'纸境工作室'}}
-  //.musicName {{getLyricInfo}}
+    .musicNameSubtitle
+      .time(v-if="musicInfo.duration" ) {{Math.ceil(getControllerStore.current)}} / {{Math.round(musicInfo.duration)}}s
+      .artists -- {{musicInfo.artists?.join(' ')??'纸境工作室'}}
   .button(@click="next")
     img.icon(:src="nextImage")
   .button(@click="setPlayMode")
@@ -147,11 +148,16 @@ watch(
     .musicNameText
       font-size 22px
       font-weight bolder
+      max-width 90%
+      overflow hidden
+      white-space nowrap
+      text-overflow ellipsis
     .musicNameSubtitle
       font-size 12px
+      width 80%
       font-weight bolder
-      align-self flex-end
-      padding-right 15px
+      display flex
+      justify-content space-between
   .button
     width 45px
     height 45px

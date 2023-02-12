@@ -8,7 +8,7 @@
       img(:src="narrowImage")
     .rightButton.pointing(@click="windowHandler.maxWindow")
       img(:src="fullImage")
-    .rightButton.pointing(@click="windowHandler.powerOff")
+    .rightButton.pointing(@click="out")
       img(:src="outImage")
 </template>
 
@@ -18,9 +18,16 @@ import outImage from '@/assets/img/out.png'
 import fullImage from '@/assets/img/full.png'
 import narrowImage from '@/assets/img/narrow.png'
 import { windowHandler } from '@/methods/index.js'
-import { componentVisibleStore } from '@/store'
-
+import { componentVisibleStore, settingStore } from '@/store'
+const getSettingStore = settingStore()
 const getComponentVisibleStore = componentVisibleStore()
+const out = () => {
+  if (getSettingStore.toTrayWhenClickClose) {
+    windowHandler.hide()
+  } else {
+    windowHandler.powerOff()
+  }
+}
 </script>
 
 <style scoped lang="stylus">

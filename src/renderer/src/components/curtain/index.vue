@@ -1,5 +1,5 @@
 <template lang="pug">
-Transition(name="fade")
+Transition(name="fullDown")
   #curtain(v-if="getComponentVisibleStore.curtainVisible" @click="clickCurtain")
     img.logo(:src="logoImage")
     .mainTitle “ Limit Music ”

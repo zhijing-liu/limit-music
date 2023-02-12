@@ -8,7 +8,7 @@ const playModeReduceMap = {
 }
 const musicInfoDb = new Dexie('musicInfo')
 musicInfoDb.version(1).stores({
-  musicItem: 'path,fileName, path,suffix,album,artists,description,year,dirPath,title' // Primary key and indexed props
+  musicItem: 'path,fileName, path,suffix,album,artists,description,year,dirPath,title,duration' // Primary key and indexed props
 })
 
 const getDbMusicMap = async () => {
@@ -77,13 +77,12 @@ export const componentVisibleStore = defineStore('componentVisible', {
     curtainVisible: true
   })
 })
-const settings = JSON.parse(
-  localStorage.getItem('setting') ??
-    JSON.stringify({
-      deepScan: false,
-      playImmediate: false
-    })
-)
+const settings = {
+  deepScan: false,
+  playImmediate: false,
+  toTrayWhenClickClose: true,
+  ...JSON.parse(localStorage.getItem('setting') ?? '{}')
+}
 export const settingStore = defineStore('setting', {
   state: () => settings,
   actions: {
