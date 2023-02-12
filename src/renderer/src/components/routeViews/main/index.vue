@@ -17,6 +17,11 @@ template(v-else)
         )
         img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
         .musicName {{item.title}}
+        .space
+        img.morePic(:src="moreImage" @click.stop="()=>getQrCode(item)")
+    #QrCode(v-if="qrCode" @click="qrCode=''")
+      img.qr(:src="qrCode")
+
 </template>
 
 <script setup>
@@ -28,6 +33,8 @@ import mp3Image from '@/assets/img/mp3.png'
 import wavImage from '@/assets/img/wav.png'
 import boredImage from '@/assets/img/bored.png'
 import tsundereImage from '@/assets/img/tsundere.png'
+import moreImage from '@/assets/img/more.png'
+import QRCode from 'qrcode'
 
 const selectIns = ref()
 const musicTypeSrcMap = {
@@ -48,13 +55,20 @@ watch(selectIns, () => {
     block: 'center'
   })
 })
+const qrCode = ref('')
+const getQrCode = async (item) => {
+  const url = `http://${window.serve.getIp()}:3000/getMusic/${window.serve.getFileKey(item.path)}/${
+    item.fileName
+  }`
+  qrCode.value = await QRCode.toDataURL(url)
+}
 </script>
 
 <style scoped lang="stylus">
 #music
   display flex
   border-radius 10px
-  //background-color rgba(235,122,119,.1)
+  position relative
   #musicList
     flex 1 0 0
     padding 10px 22px
@@ -80,11 +94,35 @@ watch(selectIns, () => {
         width 40px
         height 40px
         padding-right 20px
+      .space
+        flex 1 0 0
+      .morePic
+        width 30px
+        height 30px
+        padding 5px
+        border-radius 10px
+        &:hover
+          background-color rgba(165,222,228,.4)
     .musicItem.playing
       background-color rgba(225,107,140,.2)
       &:hover
         background-color rgba(225,107,140,.4)
         box-shadow 0 0 10px 5px rgba(225,107,140,.4)
+      .morePic
+        &:hover
+          background-color rgba(225,107,140,.4)
+  #QrCode
+    position absolute
+    top 50%
+    left 50%
+    transform translate(-50%,-50%)
+    border 10px dotted rgb(235,180,113)
+    padding 10px
+    border-radius 10px
+    background-color #FFFFFF
+    .qr
+      width 200px
+      height 200px
 #music.empty
   display flex
   flex-direction column
