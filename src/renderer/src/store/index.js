@@ -28,10 +28,10 @@ const getDbMusicMap = async () => {
 export const controllerStore = defineStore('controller', {
   state: () => ({
     musicMap: {},
-    playingUrl: '',
+    playingUrl: localStorage.getItem('playingUrl') ?? '',
     current: 0,
     isPlaying: false,
-    playMode: 'default', // 'default' 'random',
+    playMode: localStorage.getItem('playMode') ?? 'default', // 'default' 'random',
     audioPlayerInstance: null,
     musicInfoDb
   }),

@@ -25,7 +25,6 @@ export const getMusicInfo = async (
   { lyric = false, albumPic = false } = { lyric: false, albumPic: false }
 ) => {
   const fileInfo = await parseNodeStream(createReadStream(path))
-  console.log(fileInfo)
   const data = {
     title: fileInfo.common.title,
     year: fileInfo.common.year,

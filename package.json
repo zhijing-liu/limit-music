@@ -1,6 +1,6 @@
 {
   "name": "limit-music",
-  "version": "alpha@0.0.3",
+  "version": "0.0.3-alpha",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -19,7 +19,13 @@
   "build": {
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "runAfterFinish": true,
+      "shortcutName": "limit 音乐"
+    },
+    "win": {
+      "icon": "build/icon.ico"
     }
   },
   "dependencies": {

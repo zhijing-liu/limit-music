@@ -35,6 +35,7 @@ const playModeMap = reactive({
 })
 const setPlayMode = () => {
   getControllerStore.playMode = getControllerStore.playMode === 'default' ? 'random' : 'default'
+  localStorage.setItem('playMode', getControllerStore.playMode)
 }
 const getControllerStore = controllerStore()
 const audioIns = ref()
@@ -88,15 +89,22 @@ onMounted(() => {
 })
 const musicInfo = ref({})
 const playingUrl = computed(() => getControllerStore.playingUrl)
-watch(playingUrl, async () => {
-  const data = await window.underlying.getMusicInfo(playingUrl.value, {
-    lyric: true,
-    albumPic: true
-  })
-  if (data.path === playingUrl.value) {
-    musicInfo.value = data
+watch(
+  playingUrl,
+  async () => {
+    localStorage.setItem('playingUrl', playingUrl.value)
+    const data = await window.underlying.getMusicInfo(playingUrl.value, {
+      lyric: true,
+      albumPic: true
+    })
+    if (data.path === playingUrl.value) {
+      musicInfo.value = data
+    }
+  },
+  {
+    immediate: true
   }
-})
+)
 </script>
 
 <style scoped lang="stylus">
@@ -105,6 +113,7 @@ watch(playingUrl, async () => {
   display flex
   align-items center
   box-sizing border-box
+  justify-content center
   padding 10px 10vw
   border-radius 15px
   background-color rgba(46,169,223,.2)
