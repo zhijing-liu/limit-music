@@ -31,9 +31,6 @@ const items = reactive([
     icon: scanIcon
   }
 ])
-// onMounted(() => {
-//   console.log(useRoute(), useRoute().name, useRouter())
-// })
 const route = useRoute()
 const router = useRouter()
 const routerPush = (item) => {

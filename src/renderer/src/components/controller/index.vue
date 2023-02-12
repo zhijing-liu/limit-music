@@ -1,41 +1,48 @@
 <template lang="pug">
-#controller {{getControllerStore.getIndex}}
-  //.button(@click="pause") 暂停
-  //.button(@click="play") 继续
-  //.button(@click="setCurrent") 跳跃
-  //span {{getControllerStore.getMusicInfo.musicInfo.albumPic}}
-  img.albumPic(:src="getControllerStore.getMusicInfo?.musicInfo?.albumPic")
-  .button
-    img.icon(:src="playIcon")
+#controller
+  .album
+    img.blurBak(:src="musicInfo.albumPic??musicImage")
+    img.albumPic(:src="musicInfo.albumPic??musicImage")
+  .button(@click="playPause")
+    img.icon(:src="getControllerStore.isPlaying?pauseImage:playImage")
   .button(@click="last")
     img.icon(:src="lastImage")
+  .musicName
+    .musicNameText {{musicInfo.title??'嗨！欢迎回来'}}
+    .musicNameSubtitle -- {{musicInfo.artists?.join(' ')??'纸境工作室'}}
+  //.musicName {{getLyricInfo}}
   .button(@click="next")
     img.icon(:src="nextImage")
-AudioComponent(ref="audioIns" @playEnd="playEnd")
+  .button(@click="setPlayMode")
+    img.icon(:src="playModeMap[getControllerStore.playMode]")
+AudioComponent(ref="audioIns" @playEnd="next")
 </template>
 
 <script setup>
 import AudioComponent from './audio/index.vue'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { controllerStore } from '@/store'
-import playIcon from '@/assets/icon/play.svg'
+import playImage from '@/assets/img/play.png'
+import pauseImage from '@/assets/img/pause.png'
 import lastImage from '@/assets/img/last.png'
 import nextImage from '@/assets/img/next.png'
-
+import musicImage from '@/assets/img/music.png'
+import defaultImage from '@/assets/img/default.png'
+import randomImage from '@/assets/img/random.png'
+const playModeMap = reactive({
+  default: defaultImage,
+  random: randomImage
+})
+const setPlayMode = () => {
+  getControllerStore.playMode = getControllerStore.playMode === 'default' ? 'random' : 'default'
+}
 const getControllerStore = controllerStore()
 const audioIns = ref()
-const pause = () => {
-  audioIns.value.pause()
-}
-const play = () => {
-  audioIns.value.play()
-}
-const setCurrent = () => {
-  audioIns.value.setCurrent(60)
+
+const playPause = () => {
+  audioIns.value[getControllerStore.isPlaying ? 'pause' : 'play']()
 }
 const next = () => {
-  console.log(getControllerStore.getMusicMapLength)
-  console.log(getControllerStore.getPlayIndex)
   if (getControllerStore.getMusicMapLength === getControllerStore.getPlayIndex) {
     getControllerStore.setPlayIndex(0)
   } else {
@@ -49,11 +56,46 @@ const last = () => {
     getControllerStore.setPlayIndex(getControllerStore.getPlayIndex - 1)
   }
 }
-const playEnd = () => {
-  next()
-}
+// const lyricInfo = reactive({
+//   step: null,
+//   nextTime: 0
+// })
+// const getLyricInfo = reactive({
+//   label: ''
+// })
+// const getLyric = (ms) => {
+//   if (musicInfo.value.lyricList && ms > lyricInfo.nextTime) {
+//     const start = Math.min(lyricInfo.step ?? 0, musicInfo.value.lyricList.length)
+//     const list = musicInfo.value.lyricList.slice(start)
+//     for (const index in list) {
+//       const item = list[index]
+//       if (ms <= item.time) {
+//         lyricInfo.step = Math.max(0, +index + start - 1)
+//         lyricInfo.nextTime = list[lyricInfo.step + 1]?.time
+//         break
+//       }
+//     }
+//   }
+// }
+// const currentChanged = (current) => {
+//   // getLyric(current * 1000)
+// }
+// const playEnd = () => {
+//   next()
+// }
 onMounted(() => {
   getControllerStore.audioPlayerInstance = audioIns.value
+})
+const musicInfo = ref({})
+const playingUrl = computed(() => getControllerStore.playingUrl)
+watch(playingUrl, async () => {
+  const data = await window.underlying.getMusicInfo(playingUrl.value, {
+    lyric: true,
+    albumPic: true
+  })
+  if (data.path === playingUrl.value) {
+    musicInfo.value = data
+  }
 })
 </script>
 
@@ -62,21 +104,61 @@ onMounted(() => {
   height 80px
   display flex
   align-items center
-  .albumPic
-    height 45px
-    width 45px
-  .button
-    width 30px
-    height 30px
+  box-sizing border-box
+  padding 10px 10vw
+  border-radius 15px
+  background-color rgba(46,169,223,.2)
+  margin-top 10px
+  .album
+    height 60px
+    width 60px
     display flex
     justify-content center
     align-items center
+    position relative
+    margin-right 20px
+    .blurBak
+      filter blur(8px)
+      height 60px
+      width 60px
+      position absolute
+      border-radius 6px
+      overflow hidden
+      z-index -1
+    .albumPic
+      width 45px
+      height 45px
+      border-radius 4px
+      overflow hidden
+  .musicName
+    width 50vw
+    display flex
+    align-items center
+    flex-direction column
+    .musicNameText
+      font-size 22px
+      font-weight bolder
+    .musicNameSubtitle
+      font-size 12px
+      font-weight bolder
+      align-self flex-end
+      padding-right 15px
+  .button
+    width 45px
+    height 45px
+    display flex
+    justify-content center
+    align-items center
+    border-radius 13px
+    transition all 0.3s
     .icon
-      width 22px
-      height 22px
+      width 26px
+      height 26px
       transition all 0.3s
     &:hover
+      background-color rgba(254,223,225,.8)
+      box-shadow 0 0 15px 3px rgba(254,223,225,.8)
       .icon
-        width 26px
-        height 26px
+        width 32px
+        height 32px
 </style>

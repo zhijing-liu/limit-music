@@ -1,6 +1,6 @@
 <template lang="pug">
 Transition(name="fade")
-  #curtain(v-if="getComponentVisibleStore.curtainVisible")
+  #curtain(v-if="getComponentVisibleStore.curtainVisible" @click="clickCurtain")
     img.logo(:src="logoImage")
     .mainTitle “ Limit Music ”
     .subTitle Power By -zhijing
@@ -15,15 +15,21 @@ import { useRouter } from 'vue-router'
 const getControllerStore = controllerStore()
 const getComponentVisibleStore = componentVisibleStore()
 const router = useRouter()
-onMounted(async () => {
+let mounted = false
+onMounted(async () => {})
+onBeforeMount(async () => {
+  await getControllerStore.refreshMusicMap()
+  await router.push({ name: 'main' })
+  mounted = true
   setTimeout(() => {
     getComponentVisibleStore.curtainVisible = false
-  }, 2000)
+  }, 400)
 })
-onBeforeMount(() => {
-  getControllerStore.refreshMusicMap()
-  router.push({ name: 'main' })
-})
+const clickCurtain = () => {
+  if (mounted) {
+    getComponentVisibleStore.curtainVisible = false
+  }
+}
 </script>
 
 <style scoped lang="stylus">

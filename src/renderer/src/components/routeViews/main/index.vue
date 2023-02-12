@@ -7,16 +7,21 @@ template(v-if="getControllerStore.getMusicDisplayList.length===0")
     .clickInfo 快点我去搜索啦！
 template(v-else)
   #music
-    .header
-    #musicList(ref="musicListIns" )
-      .musicItem(v-for="item in getControllerStore.getMusicDisplayList" @click="()=>playMusic(item)")
+    #musicList.noScrollBar(ref="musicListIns")
+      .musicItem(
+        v-for="item in getControllerStore.getMusicDisplayList"
+        @click="()=>playMusic(item)"
+        :key="item.path"
+        :class="{playing:getControllerStore.playingUrl===item.path}"
+        :ref="(itemIns)=>{getControllerStore.playingUrl===item.path&&(selectIns=itemIns)}"
+        )
         img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
-        .musicName {{item.album}},{{item.suffix}}
+        .musicName {{item.title}}
 </template>
 
 <script setup>
 import { controllerStore } from '@/store'
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import flacImage from '@/assets/img/flac.png'
 import mp3Image from '@/assets/img/mp3.png'
@@ -24,6 +29,7 @@ import wavImage from '@/assets/img/wav.png'
 import boredImage from '@/assets/img/bored.png'
 import tsundereImage from '@/assets/img/tsundere.png'
 
+const selectIns = ref()
 const musicTypeSrcMap = {
   '.flac': flacImage,
   '.mp3': mp3Image,
@@ -32,19 +38,23 @@ const musicTypeSrcMap = {
 const getControllerStore = controllerStore()
 const router = useRouter()
 const playMusic = (item) => {
-  console.log(item)
-  // getControllerStore.audioPlayerInstance.setPlayUrl(item.path)
+  getControllerStore.playingUrl = item.path
 }
 const toScan = () => {
   router.push({ name: 'scan' })
 }
+watch(selectIns, () => {
+  selectIns.value?.scrollIntoView({
+    block: 'center'
+  })
+})
 </script>
 
 <style scoped lang="stylus">
 #music
   display flex
-  .header
-    height 80px
+  border-radius 10px
+  //background-color rgba(235,122,119,.1)
   #musicList
     flex 1 0 0
     padding 10px 22px
@@ -53,6 +63,7 @@ const toScan = () => {
     flex-direction column
     justify-content space-between
     overflow auto
+    scroll-behavior smooth
     .musicItem
       height 40px
       flex 1 0 40px
@@ -70,6 +81,11 @@ const toScan = () => {
         width 40px
         height 40px
         padding-right 20px
+    .musicItem.playing
+      background-color rgba(225,107,140,.2)
+      &:hover
+        background-color rgba(225,107,140,.4)
+        box-shadow 0 0 10px 5px rgba(225,107,140,.4)
 #music.empty
   display flex
   flex-direction column

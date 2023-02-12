@@ -25,11 +25,14 @@ export const getMusicInfo = async (
   { lyric = false, albumPic = false } = { lyric: false, albumPic: false }
 ) => {
   const fileInfo = await parseNodeStream(createReadStream(path))
+  console.log(fileInfo)
   const data = {
+    title: fileInfo.common.title,
     year: fileInfo.common.year,
     description: fileInfo.common.comment,
     artists: fileInfo.common.artists,
-    album: fileInfo.common.album
+    album: fileInfo.common.album,
+    path
   }
   if (lyric) {
     const lyricList = []
@@ -74,7 +77,8 @@ export const scanMusicByPath = async (dirPath, deep = false) => {
     .map((fileName) => ({
       fileName,
       suffix: extname(fileName).toLowerCase(),
-      path: join(dirPath, fileName)
+      path: join(dirPath, fileName),
+      dirPath
     }))
     .filter(({ suffix }) => musicType[suffix])
   const map = {

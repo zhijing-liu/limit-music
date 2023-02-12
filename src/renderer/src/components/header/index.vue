@@ -2,22 +2,25 @@
 #header()
   .logo
     img(:src="LOGOIcon")
-  .title limit music
+  .title(@click="getComponentVisibleStore.curtainVisible = true") limit music
   .rightButtons
     .rightButton(@click="windowHandler.minWindow")
-      img(:src="narrowIcon")
+      img(:src="narrowImage")
     .rightButton(@click="windowHandler.maxWindow")
-      img(:src="fullIcon")
+      img(:src="fullImage")
     .rightButton(@click="windowHandler.powerOff")
-      img(:src="closeIcon")
+      img(:src="outImage")
 </template>
 
 <script setup>
 import LOGOIcon from '@/assets/logo.png'
-import closeIcon from '@/assets/icon/close.svg'
-import fullIcon from '@/assets/icon/full.svg'
-import narrowIcon from '@/assets/icon/narrow.svg'
+import outImage from '@/assets/img/out.png'
+import fullImage from '@/assets/img/full.png'
+import narrowImage from '@/assets/img/narrow.png'
 import { windowHandler } from '@/methods/index.js'
+import { componentVisibleStore } from '@/store'
+
+const getComponentVisibleStore = componentVisibleStore()
 </script>
 
 <style scoped lang="stylus">

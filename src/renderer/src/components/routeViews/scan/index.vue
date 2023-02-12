@@ -11,12 +11,12 @@
       img.icon.button(:src="deleteIcon" @click="()=>removeDir(dir)")
   .buttons
     .button.setScanDirButton(@click="addDir") 添加文件夹
-    .button.scanButton(@click="startScan" :class="{disabled:scanning}") {{scanning?'扫描中。。。':'开始扫描'}}
+    .button.scanButton(@click="startScan" :class="{disabled:scanning}" v-if="dirList.length>0" ) {{scanning?'扫描中。。。':'开始扫描'}}
   Transition(name="fade")
     .scanResult(v-if="scanResultPopVisible")
       .title 扫描结果
       img.closeButton(:src="closeImage" @click="scanResultPopVisible=!scanResultPopVisible")
-      .list
+      .list.noScrollBar
         .group(v-for="(result,path) in scanResultMap")
           .groupName(@click="result.display=!result.display")
             img.icon(:src="dirIcon")
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { nextTick, onBeforeMount, ref, toRaw } from 'vue'
+import { onBeforeMount, ref, toRaw } from 'vue'
 import amazedImage from '@/assets/img/amazed.png'
 import dirIcon from '@/assets/icon/dir.svg'
 import deleteIcon from '@/assets/icon/delete.svg'
@@ -90,12 +90,13 @@ const startScan = async () => {
   scanning.value = false
   scanResultPopVisible.value = true
 }
-const addToPlayList = () => {
+const addToPlayList = async () => {
   let listMap = {}
   for (const { items } of Object.values(toRaw(scanResultMap.value))) {
     listMap = { ...listMap, ...items }
   }
-  getControllerStore.setMusicMap(listMap)
+  await getControllerStore.setMusicMap(listMap)
+  scanResultPopVisible.value = false
 }
 </script>
 
@@ -212,8 +213,6 @@ const addToPlayList = () => {
       overflow auto
       display flex
       flex-direction column
-      &::-webkit-scrollbar
-        width 0
       .group
         display flex
         flex-direction column

@@ -17,7 +17,7 @@ async function createWindow() {
       sandbox: false
     }
   })
-  mainWindow.webContents.openDevTools()
+  !app.isPackaged && mainWindow.webContents.openDevTools()
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })

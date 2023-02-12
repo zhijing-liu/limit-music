@@ -15,7 +15,9 @@
     background rgba(165,222,228,.6)
   //&::-webkit-scrollbar-corner
   //  background-color: transparent
-
+.noScrollBar
+  &::-webkit-scrollbar
+    width 0
 body
   padding 0
   margin 0
@@ -26,3 +28,11 @@ body
     overflow auto
     display flex
     flex-direction column
+@keyframes wordsLoop {
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}

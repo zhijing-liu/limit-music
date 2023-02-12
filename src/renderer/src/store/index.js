@@ -2,12 +2,12 @@ import { defineStore } from 'pinia'
 import Dexie from 'dexie'
 
 const playModeReduceMap = {
-  order: (map) => Object.values(map),
+  default: (map) => Object.values(map),
   random: (map) => Object.values(map).sort(() => Math.random() - 0.5)
 }
 const musicInfoDb = new Dexie('musicInfo')
 musicInfoDb.version(1).stores({
-  musicItem: 'path,fileName, path,suffix,album,artists,description,year' // Primary key and indexed props
+  musicItem: 'path,fileName, path,suffix,album,artists,description,year,dirPath,title' // Primary key and indexed props
 })
 
 const getDbMusicMap = async () => {
@@ -31,7 +31,7 @@ export const controllerStore = defineStore('controller', {
     playingUrl: '',
     current: 0,
     isPlaying: false,
-    playMode: 'order', // 'order' 'random',
+    playMode: 'default', // 'default' 'random',
     audioPlayerInstance: null,
     musicInfoDb
   }),
@@ -40,8 +40,6 @@ export const controllerStore = defineStore('controller', {
       return state.musicMap?.[state.playingUrl] ?? {}
     },
     getMusicDisplayList(state) {
-      console.log(state.musicMap)
-      console.log(Object.values(state.musicMap))
       return Object.values(state.musicMap)
     },
     getMusicPlayList(state) {
