@@ -1,7 +1,7 @@
 <template lang="pug">
 #leftBar
   #leftBarBody
-    .item(
+    .item.pointing(
       v-for="item in items"
       :key="item.routeName"
       :class="{active:route.name===item.routeName}"
@@ -9,14 +9,21 @@
       )
       img.icon(:src="item.icon")
       .label {{item.label}}
-    //.item(:class="{active:getRouteName='scan'}")
-    //  img.icon(:src="scanIcon")
-    //  .label 测试
+  #leftBarBody.ended
+    .item.pointing(
+      v-for="item in endItems"
+      :key="item.routeName"
+      :class="{active:route.name===item.routeName}"
+      @click="()=>routerPush(item)"
+      )
+      img.icon(:src="item.icon")
+      .label {{item.label}}
 </template>
 
 <script setup>
 import scanIcon from '@/assets/icon/scan.svg'
 import listIcon from '@/assets/icon/list.svg'
+import settingImage from '@/assets/img/setting.png'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, reactive } from 'vue'
 const items = reactive([
@@ -29,6 +36,14 @@ const items = reactive([
     label: '扫描',
     routeName: 'scan',
     icon: scanIcon
+  }
+])
+const endItems = reactive([
+  {
+    label: '设置',
+    routeName: 'setting',
+    icon: settingImage,
+    end: true
   }
 ])
 const route = useRoute()
@@ -44,6 +59,7 @@ const routerPush = (item) => {
   width 260px
   flex 0 0 260px
   display flex
+  flex-direction column
   #leftBarBody
     flex 1 0 0
     margin 0 5px
@@ -59,7 +75,7 @@ const routerPush = (item) => {
       border-radius 8px
       margin-bottom 10px
       background-color rgba(120,194,196,.1)
-      cursor var(--cursor-pointing)
+      justify-self flex-end
       &:hover
         background-color rgba(120,194,196,.3)
       .icon
@@ -72,4 +88,6 @@ const routerPush = (item) => {
     .item.active
       color #FFFFFF
       background-color rgba(120,194,196,.8)
+  #leftBarBody.ended
+    flex-direction column-reverse
 </style>

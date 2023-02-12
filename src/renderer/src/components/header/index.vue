@@ -2,13 +2,13 @@
 #header()
   .logo
     img(:src="LOGOIcon")
-  .title(@click="getComponentVisibleStore.curtainVisible = true") limit music
+  .title.pointing(@click="getComponentVisibleStore.curtainVisible = true") limit music
   .rightButtons
-    .rightButton(@click="windowHandler.minWindow")
+    .rightButton.pointing(@click="windowHandler.minWindow")
       img(:src="narrowImage")
-    .rightButton(@click="windowHandler.maxWindow")
+    .rightButton.pointing(@click="windowHandler.maxWindow")
       img(:src="fullImage")
-    .rightButton(@click="windowHandler.powerOff")
+    .rightButton.pointing(@click="windowHandler.powerOff")
       img(:src="outImage")
 </template>
 
@@ -44,7 +44,6 @@ const getComponentVisibleStore = componentVisibleStore()
     height 18px
     font-weight 800
     text-transform uppercase
-    cursor var(--cursor-pointing)
     padding 8px
     border-radius 8px
     transition background-color 0.8s
@@ -57,7 +56,6 @@ const getComponentVisibleStore = componentVisibleStore()
       width 27px
       padding 5px
       border-radius 5px
-      cursor var(--cursor-pointing)
       img
         width 100%
         height 100%

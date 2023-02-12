@@ -16,6 +16,11 @@ export default createRouter({
       path: '/scan',
       name: 'scan',
       component: () => import('@/components/routeViews/scan/index.vue')
+    },
+    {
+      path: '/setting',
+      name: 'setting',
+      component: () => import('@/components/routeViews/setting/index.vue')
     }
   ]
 })

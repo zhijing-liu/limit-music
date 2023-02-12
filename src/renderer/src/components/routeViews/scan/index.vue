@@ -7,18 +7,18 @@
     .dir(v-for="dir in dirList" :key="dir.path" :class="{noAuth:!dir.access}")
       img.icon(:src="dirIcon")
       .dirPath {{dir.path}}
-      img.icon.button(:src="waitingIcon" v-if="activePath===dir.path")
-      img.icon.button(:src="deleteIcon" @click="()=>removeDir(dir)")
+      img.icon.button.pointing(:src="waitingIcon" v-if="activePath===dir.path")
+      img.icon.button.pointing(:src="deleteIcon" @click="()=>removeDir(dir)")
   .buttons
-    .button.setScanDirButton(@click="addDir") 添加文件夹
-    .button.scanButton(@click="startScan" :class="{disabled:scanning}" v-if="dirList.length>0" ) {{scanning?'扫描中。。。':'开始扫描'}}
+    .button.pointing.setScanDirButton(@click="addDir") 添加文件夹
+    .button.pointing.scanButton(@click="startScan" :class="{disabled:scanning}" v-if="dirList.length>0" ) {{scanning?'扫描中。。。':'开始扫描'}}
   Transition(name="fade")
     .scanResult(v-if="scanResultPopVisible")
       .title 扫描结果
-      img.closeButton(:src="closeImage" @click="scanResultPopVisible=!scanResultPopVisible")
+      img.closeButton.pointing(:src="closeImage" @click="scanResultPopVisible=!scanResultPopVisible")
       .list.noScrollBar
         .group(v-for="(result,path) in scanResultMap")
-          .groupName(@click="result.display=!result.display")
+          .groupName.pointing(@click="result.display=!result.display")
             img.icon(:src="dirIcon")
             .label
               .path {{path}}
@@ -30,7 +30,7 @@
             .item(v-for="item in result.items" :key="item.path")
               img.icon(:src="musicTypeSrcMap[item.suffix]")
               .name {{item.fileName}}
-      .submitButton(@click="addToPlayList") 好吧，就是这些啦!
+      .submitButton.pointing(@click="addToPlayList") 好吧，就是这些啦!
 </template>
 
 <script setup>
@@ -121,7 +121,6 @@ const addToPlayList = async () => {
       font-size 20px
       font-weight bold
       letter-spacing 5px
-      cursor var(--cursor-pointing)
       margin 0 10px
     .button.disabled
       opacity 0.8
@@ -177,7 +176,6 @@ const addToPlayList = async () => {
         white-space nowrap
         text-overflow ellipsis
       .button
-        cursor var(--cursor-pointing)
         padding 6px
         border-radius 25%
         height 20px
@@ -222,7 +220,6 @@ const addToPlayList = async () => {
           font-weight 1000
           background-color rgba(181,202,160,.2)
           padding 10px
-          cursor var(--cursor-pointing)
           align-items center
           .icon
             height 25px
@@ -264,7 +261,6 @@ const addToPlayList = async () => {
       width 25px
       //padding 5px
       border-radius 3px
-      cursor var(--cursor-pointing)
       &:hover
         background-color rgba(245,150,170,0.5)
         box-shadow 0 0 15px 5px rgba(245,150,170,0.5)
@@ -281,6 +277,5 @@ const addToPlayList = async () => {
       align-items center
       border-radius 8px
       &:hover
-        cursor var(--cursor-pointing)
         background-color rgba(120,194,196,.4)
 </style>

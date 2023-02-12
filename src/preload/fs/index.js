@@ -12,19 +12,25 @@ const getAccess = async (path) => {
     )
   })
 }
+export const confirmFileAccess = (pathList) => {
+  return Promise.all(pathList.map((path) => getAccess(path)))
+}
 export const getDirAccessibility = (list) => {
   return Promise.all(list.map(getAccess))
 }
 const musicType = {
   '.mp3': true,
   '.flac': true,
-  '.wav': true
+  '.wav': true,
+  '.m4a': true
 }
 export const getMusicInfo = async (
   path,
   { lyric = false, albumPic = false } = { lyric: false, albumPic: false }
 ) => {
-  const fileInfo = await parseNodeStream(createReadStream(path))
+  const stream = createReadStream(path)
+  const fileInfo = await parseNodeStream(stream)
+  stream.close()
   const data = {
     title: fileInfo.common.title,
     year: fileInfo.common.year,
@@ -71,15 +77,35 @@ export const getMusicInfo = async (
   }
   return data
 }
+const getMusic = (dirPath, deep) => {
+  let fileList
+  try {
+    fileList = readdirSync(dirPath, { withFileTypes: true })
+  } catch (e) {
+    fileList = []
+  }
+  let list = []
+  for (const dirent of fileList) {
+    if (dirent.isDirectory()) {
+      if (deep) {
+        list = [...list, ...getMusic(join(dirPath, dirent.name), true)]
+      }
+    } else {
+      const suffix = extname(dirent.name).toLowerCase()
+      if (musicType[suffix]) {
+        list.push({
+          fileName: dirent.name,
+          suffix,
+          path: join(dirPath, dirent.name),
+          dirPath
+        })
+      }
+    }
+  }
+  return list
+}
 export const scanMusicByPath = async (dirPath, deep = false) => {
-  const list = readdirSync(dirPath)
-    .map((fileName) => ({
-      fileName,
-      suffix: extname(fileName).toLowerCase(),
-      path: join(dirPath, fileName),
-      dirPath
-    }))
-    .filter(({ suffix }) => musicType[suffix])
+  const list = getMusic(dirPath, deep)
   const map = {
     length: list.length,
     items: {}

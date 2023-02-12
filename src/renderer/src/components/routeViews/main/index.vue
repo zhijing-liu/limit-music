@@ -1,6 +1,6 @@
 <template lang="pug">
 template(v-if="getControllerStore.getMusicDisplayList.length===0")
-  #music.empty(@click="toScan")
+  #music.empty.pointing(@click="toScan")
     img.icon.boredImage(:src="boredImage")
     img.icon.tsundereImage(:src="tsundereImage")
     .emptyInfo 没有音乐怎么播嘛！
@@ -8,7 +8,7 @@ template(v-if="getControllerStore.getMusicDisplayList.length===0")
 template(v-else)
   #music
     #musicList.noScrollBar(ref="musicListIns")
-      .musicItem(
+      .musicItem.pointing(
         v-for="item in getControllerStore.getMusicDisplayList"
         @click="()=>playMusic(item)"
         :key="item.path"
@@ -73,7 +73,6 @@ watch(selectIns, () => {
       margin-bottom 10px
       padding 10px 18px
       border-radius 15px
-      cursor var(--cursor-pointing)
       &:hover
         background-color rgba(165,222,228,.4)
         box-shadow 0 0 10px 5px rgba(165,222,228,.4)
@@ -92,7 +91,6 @@ watch(selectIns, () => {
   justify-content center
   align-items center
   border-radius 20px
-  cursor var(--cursor-pointing)
   .clickInfo
   .emptyInfo
     font-size 22px

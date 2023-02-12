@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import Dexie from 'dexie'
+import { toRaw } from 'vue'
 
 const playModeReduceMap = {
   default: (map) => Object.values(map),
@@ -11,19 +12,24 @@ musicInfoDb.version(1).stores({
 })
 
 const getDbMusicMap = async () => {
-  return (await musicInfoDb.musicItem.count()) > 0
-    ? (await musicInfoDb.musicItem.toArray()).reduce((map, data, index) =>
-        index === 1
-          ? {
-              [map.path]: map,
-              [data.path]: data
-            }
-          : {
-              ...map,
-              [data.path]: data
-            }
-      )
-    : {}
+  const map =
+    (await musicInfoDb.musicItem.count()) > 0
+      ? (await musicInfoDb.musicItem.toArray()).reduce((map, data, index) =>
+          index === 1
+            ? {
+                [map.path]: map,
+                [data.path]: data
+              }
+            : {
+                ...map,
+                [data.path]: data
+              }
+        )
+      : {}
+  for (const { path, access } of await window.underlying.confirmFileAccess(Object.keys(map))) {
+    map[path].access = access
+  }
+  return map
 }
 export const controllerStore = defineStore('controller', {
   state: () => ({
@@ -70,4 +76,19 @@ export const componentVisibleStore = defineStore('componentVisible', {
   state: () => ({
     curtainVisible: true
   })
+})
+const settings = JSON.parse(
+  localStorage.getItem('setting') ??
+    JSON.stringify({
+      deepScan: false,
+      playImmediate: false
+    })
+)
+export const settingStore = defineStore('setting', {
+  state: () => settings,
+  actions: {
+    storageSetting() {
+      localStorage.setItem('setting', JSON.stringify(toRaw(this.$state)))
+    }
+  }
 })
