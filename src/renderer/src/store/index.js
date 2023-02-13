@@ -7,8 +7,26 @@ const playModeReduceMap = {
   random: (map) => Object.values(map).sort(() => Math.random() - 0.5)
 }
 const musicInfoDb = new Dexie('musicInfo')
+const musicInfoDbKeys = {
+  musicItem: {
+    key: 'path',
+    line: {
+      fileName: true,
+      suffix: true,
+      album: true,
+      artists: true,
+      description: true,
+      year: true,
+      dirPath: true,
+      title: true,
+      duration: true
+    }
+  }
+}
 musicInfoDb.version(1).stores({
-  musicItem: 'path,fileName, path,suffix,album,artists,description,year,dirPath,title,duration' // Primary key and indexed props
+  musicItem: `${musicInfoDbKeys.musicItem.key},${Object.keys(musicInfoDbKeys.musicItem.line).join(
+    ','
+  )}` // Primary key and indexed props
 })
 
 const getDbMusicMap = async () => {

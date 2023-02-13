@@ -93,13 +93,15 @@ const playingUrl = computed(() => getControllerStore.playingUrl)
 watch(
   playingUrl,
   async () => {
-    localStorage.setItem('playingUrl', playingUrl.value)
-    const data = await window.underlying.getMusicInfo(playingUrl.value, {
-      lyric: true,
-      albumPic: true
-    })
-    if (data.path === playingUrl.value) {
-      musicInfo.value = data
+    if (playingUrl.value) {
+      localStorage.setItem('playingUrl', playingUrl.value)
+      const data = await window.underlying.getMusicInfo(playingUrl.value, {
+        lyric: true,
+        albumPic: true
+      })
+      if (data.path === playingUrl.value) {
+        musicInfo.value = data
+      }
     }
   },
   {
