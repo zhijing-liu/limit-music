@@ -1,5 +1,5 @@
 <template lang="pug">
-.progress.pointing(ref="progress"  @click.stop="clickProgress" @mousedown="mousedown")
+.progress.pointing(@click.stop="clickProgress" @mousedown="()=>getSettingStore.progressBarAllowSlide&&mousedown()")
   .enabled(:style="`width:${getPercent}%`")
   .current(:style="`left:${getPercent}%`")
     .timeDisplay
@@ -15,11 +15,15 @@
     .pointer
   .current(style="left:100%")
     .timeDisplay {{common.getTime(props.length).minute}}:{{common.getTime(props.length).second}}
+    .pointer
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
 import { common } from '@/methods'
+import { settingStore } from '@/store/index.js'
+
+const getSettingStore = settingStore()
 const props = defineProps(['current', 'length'])
 const emits = defineEmits(['setProgress'])
 const progress = ref()
@@ -30,16 +34,16 @@ const getTime = computed(() => common.getTime(props.current))
 const clickProgress = (e) => {
   emits(
     'setProgress',
-    (props.length * (e.x - progress.value.getBoundingClientRect().x)) /
-      progress.value.getBoundingClientRect().width
+    (props.length * (e.x - e.target.getBoundingClientRect().x)) /
+      e.target.getBoundingClientRect().width
   )
 }
-const mousedown = (e) => {
+const mousedown = () => {
   document.body.addEventListener('mousemove', clickProgress)
   document.body.addEventListener('mouseleave', mouseup)
   document.body.addEventListener('mouseup', mouseup)
 }
-const mouseup = (e) => {
+const mouseup = () => {
   document.body.removeEventListener('mousemove', clickProgress)
   document.body.removeEventListener('mouseleave', mouseup)
   document.body.removeEventListener('mouseup', mouseup)
@@ -71,7 +75,7 @@ const mouseup = (e) => {
     display flex
     justify-content center
     pointer-events none
-    overflow
+    transition all 0.8s
     .timeDisplay
       position relative
       display flex
@@ -82,7 +86,6 @@ const mouseup = (e) => {
           color transparent
         .text
           position absolute
-
     .pointer
       position absolute
       bottom -14px
@@ -92,4 +95,7 @@ const mouseup = (e) => {
       border-top-color #FFFFFF
   .enabled
     background-color rgb(240,150,170)
+    transition all 0.8s
+  *
+    pointer-events none
 </style>

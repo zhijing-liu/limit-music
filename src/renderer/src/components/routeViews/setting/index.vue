@@ -60,6 +60,15 @@ const settingGroups = reactive({
           set: (v) => (getSettingStore.playImmediate = v)
         }),
         type: 'switch'
+      },
+      {
+        label: '进度条可滑动调节',
+        value: computed({
+          get: () => getSettingStore.progressBarAllowSlide,
+          set: (v) => (getSettingStore.progressBarAllowSlide = v)
+        }),
+        warning: '滑动调节会变相打断播放进度,可能破坏播放体验',
+        type: 'switch'
       }
     ]
   },
@@ -88,8 +97,7 @@ const settingGroups = reactive({
           get: () => getSettingStore.webServeEnable,
           set: (v) => (getSettingStore.webServeEnable = v)
         }),
-        type: 'switch',
-        warning: '修改将立即生效'
+        type: 'switch'
       },
       {
         label: '网络服务端口',
@@ -97,8 +105,7 @@ const settingGroups = reactive({
           get: () => getSettingStore.webServePort,
           set: (v) => (getSettingStore.webServePort = isNaN(+v) ? 4000 : +v)
         }),
-        type: 'input',
-        warning: '修改将立即生效'
+        type: 'input'
       }
     ]
   }

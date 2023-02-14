@@ -101,6 +101,7 @@ const settings = {
   toTrayWhenClickClose: true,
   webServeEnable: true,
   webServePort: 4000,
+  progressBarAllowSlide: false,
   ...JSON.parse(localStorage.getItem('setting') ?? '{}')
 }
 export const settingStore = defineStore('setting', {

@@ -47,7 +47,7 @@ const leave = () => {
     position absolute
     right -5px
     transform translateX(100%)
-    width 100px
+    width 200px
     padding 15px 20px
     background-color #FFFFFF
     box-shadow 0 0 10px 5px rgba(144,144,144,.05)

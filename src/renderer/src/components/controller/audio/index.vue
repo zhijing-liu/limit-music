@@ -68,7 +68,6 @@ defineExpose({
   pause,
   setCurrent
 })
-// watch
 watch(
   computed(() => getControllerStore.playingUrl),
   async () => {

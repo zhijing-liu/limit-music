@@ -8,21 +8,22 @@ template(v-if="getControllerStore.getMusicDisplayList.length===0")
 template(v-else)
   #music(ref="musicIns")
     #musicList.noScrollBar(ref="musicListIns")
-      .musicItem.pointing(
-        v-for="item in getControllerStore.getMusicDisplayList"
-        @click="()=>playMusic(item)"
-        :key="item.path"
-        :class="{playing:getControllerStore.playingUrl===item.path}"
-        :ref="(itemIns)=>{getControllerStore.playingUrl===item.path&&(selectIns=itemIns)}"
-        )
-        img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
-        .musicInfo
-          .musicName {{item.title}}
-          .musicArtists {{item.artists?.join(' ')}}
-        .space
-        img.morePic(:src="moreImage" @click.stop="(e)=>clickItem(e.target,item)")
+      TransitionGroup(name="fade")
+        .musicItem.pointing(
+          v-for="item in getControllerStore.getMusicDisplayList"
+          @click="()=>playMusic(item)"
+          :key="item.path"
+          :class="{playing:getControllerStore.playingUrl===item.path,disabled:!item.access}"
+          :ref="(itemIns)=>{getControllerStore.playingUrl===item.path&&(selectIns=itemIns)}"
+          )
+          img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
+          .musicInfo
+            .musicName {{item.title}}
+            .musicArtists {{item.artists?.join(' ')}}
+          img.morePic(:src="moreImage" @click.stop="(e)=>clickItem(e.target,item)")
     QRCode(ref="qrCodeIns")
     SubMenu(ref="subMenuIns")
+    MusicInfo(ref="musicInfoIns")
 </template>
 
 <script setup>
@@ -37,6 +38,7 @@ import tsundereImage from '@/assets/img/tsundere.png'
 import moreImage from '@/assets/img/more.png'
 import QRCode from './qrCode/index.vue'
 import SubMenu from '@/components/components/subMenu.vue'
+import MusicInfo from './musicInfo/index.vue'
 
 const musicIns = ref()
 const selectIns = ref()
@@ -48,7 +50,9 @@ const musicTypeSrcMap = {
 const getControllerStore = controllerStore()
 const router = useRouter()
 const playMusic = (item) => {
-  getControllerStore.playingUrl = item.path
+  if (item.access) {
+    getControllerStore.playingUrl = item.path
+  }
 }
 const toScan = () => {
   router.push({ name: 'scan' })
@@ -63,8 +67,9 @@ const qrCodeIns = ref()
 const share = async (item) => {
   qrCodeIns.value.display(item)
 }
+const musicInfoIns = ref()
 const displayInfo = async (item) => {
-  console.log(item)
+  musicInfoIns.value.display(item)
 }
 const clickItem = (icon, item) => {
   const rect = icon.getBoundingClientRect()
@@ -112,8 +117,6 @@ const clickItem = (icon, item) => {
         width 40px
         height 40px
         padding-right 20px
-      .space
-        flex 1 0 0
       .morePic
         width 30px
         height 30px
@@ -139,6 +142,14 @@ const clickItem = (icon, item) => {
       .morePic
         &:hover
           background-color rgba(225,107,140,.4)
+    .musicItem.disabled
+      background-color rgba(144,144,144,.2)
+      &:hover
+        background-color rgba(144,144,144,.2)
+        box-shadow none
+      .morePic
+        &:hover
+          background-color rgba(144,144,144,.4)
 #music.empty
   display flex
   flex-direction column
