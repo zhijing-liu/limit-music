@@ -1,0 +1,48 @@
+<template lang="pug">
+.input(@click="setFocus")
+  input.inputArea(v-if="inputShow" ref="inputAreaIns" :value="props.value" @blur="blur")
+  span(v-else) {{value}}
+</template>
+
+<script setup>
+import { nextTick, onBeforeUnmount, ref } from 'vue'
+
+const props = defineProps(['value'])
+const emits = defineEmits(['update:value'])
+const inputAreaIns = ref()
+const inputShow = ref(false)
+const setFocus = () => {
+  inputShow.value = true
+  nextTick(() => {
+    inputAreaIns.value.focus()
+  })
+}
+const blur = (e) => {
+  inputShow.value = false
+  if (e.target.value !== props.value) {
+    emits('update:value', e.target.value)
+  }
+}
+</script>
+
+<style scoped lang="stylus">
+.input
+  padding 5px 10px
+  width 40px
+  background-color #d3e9e2
+  border-radius 6px
+  height 20px
+  font-size 14px
+  text-align center
+  line-height 20px
+  .inputArea
+    width 40px
+    padding 0
+    border 0
+    outline none
+    background-color transparent
+    user-select none
+    text-align center
+    font-size 14px
+    font-family inherit
+</style>

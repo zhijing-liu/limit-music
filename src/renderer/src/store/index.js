@@ -99,6 +99,8 @@ const settings = {
   deepScan: false,
   playImmediate: false,
   toTrayWhenClickClose: true,
+  webServeEnable: true,
+  webServePort: 4000,
   ...JSON.parse(localStorage.getItem('setting') ?? '{}')
 }
 export const settingStore = defineStore('setting', {

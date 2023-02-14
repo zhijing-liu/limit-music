@@ -7,12 +7,13 @@ Transition(name="fullDown")
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted } from 'vue'
-import { controllerStore, componentVisibleStore } from '@/store'
+import { computed, onBeforeMount, onMounted, watch } from 'vue'
+import { controllerStore, componentVisibleStore, settingStore } from '@/store'
 import logoImage from '@/assets/logo.png'
 import { useRouter } from 'vue-router'
 
 const getControllerStore = controllerStore()
+const getSettingStore = settingStore()
 const getComponentVisibleStore = componentVisibleStore()
 const router = useRouter()
 let mounted = false
@@ -21,15 +22,31 @@ onBeforeMount(async () => {
   await getControllerStore.refreshMusicMap()
   await router.push({ name: 'main' })
   mounted = true
-  setTimeout(() => {
-    getComponentVisibleStore.curtainVisible = false
-  }, 400)
+  getComponentVisibleStore.curtainVisible = false
 })
 const clickCurtain = () => {
   if (mounted) {
     getComponentVisibleStore.curtainVisible = false
   }
 }
+watch(
+  computed(() => ({
+    enable: getSettingStore.webServeEnable,
+    port: getSettingStore.webServePort
+  })),
+  (data) => {
+    if (data.enable) {
+      window.serve.setServerStart({ port: data.port }).catch(() => {
+        getSettingStore.webServeEnable = false
+      })
+    } else {
+      window.serve.setServerClose({ port: data.port })
+    }
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
 <style scoped lang="stylus">

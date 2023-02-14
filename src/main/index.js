@@ -19,7 +19,7 @@ let tray
 let mainWindow
 async function createWindow() {
   mainWindow = new BrowserWindow({
-    width: screen.getPrimaryDisplay().workAreaSize.width * 0.75,
+    width: screen.getPrimaryDisplay().workAreaSize.width * (!app.isPackaged ? 0.75 : 0.5),
     height: screen.getPrimaryDisplay().workAreaSize.height * 0.75,
     minWidth: 800,
     minHeight: 600,

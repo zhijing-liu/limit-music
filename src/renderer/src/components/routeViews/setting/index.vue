@@ -10,20 +10,25 @@
       #settingContainer.noScrollBar(:key="tabKey")
         .title {{settingGroups[tabKey].title}}设置
         .body
-          template(v-for="item in settingGroups[tabKey].items")
+          template(v-for="item in settingGroups[tabKey].items.filter((i)=>!i.hide)")
             .item(v-if="item.type==='switch'")
               .label {{item.label}}
                 Warning(v-if="item.warning" :info="item.warning")
               Switch(v-model:active="item.value")
+            .item(v-if="item.type==='input'")
+              .label {{item.label}}
+                Warning(v-if="item.warning" :info="item.warning")
+              Input(v-model:value="item.value")
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import scanIcon from '@/assets/icon/scan.svg'
 import listIcon from '@/assets/icon/list.svg'
 import windowIcon from '@/assets/img/window.png'
 import Switch from '@/components/components/switch.vue'
 import Warning from '@/components/components/warning.vue'
+import Input from '@/components/components/input.vue'
 import { settingStore } from '@/store'
 
 const tabKey = ref('window')
@@ -70,6 +75,30 @@ const settingGroups = reactive({
         }),
         type: 'switch',
         warning: '深度检索可能会增加检索时间'
+      }
+    ]
+  },
+  webServe: {
+    title: '网络',
+    icon: scanIcon,
+    items: [
+      {
+        label: '开启网络服务',
+        value: computed({
+          get: () => getSettingStore.webServeEnable,
+          set: (v) => (getSettingStore.webServeEnable = v)
+        }),
+        type: 'switch',
+        warning: '修改将立即生效'
+      },
+      {
+        label: '网络服务端口',
+        value: computed({
+          get: () => getSettingStore.webServePort,
+          set: (v) => (getSettingStore.webServePort = isNaN(+v) ? 4000 : +v)
+        }),
+        type: 'input',
+        warning: '修改将立即生效'
       }
     ]
   }

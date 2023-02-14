@@ -6,7 +6,7 @@ template(v-if="getControllerStore.getMusicDisplayList.length===0")
     .emptyInfo 没有音乐怎么播嘛！
     .clickInfo 快点我去搜索啦！
 template(v-else)
-  #music
+  #music(ref="musicIns")
     #musicList.noScrollBar(ref="musicListIns")
       .musicItem.pointing(
         v-for="item in getControllerStore.getMusicDisplayList"
@@ -18,10 +18,9 @@ template(v-else)
         img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
         .musicName {{item.title}}
         .space
-        img.morePic(:src="moreImage" @click.stop="()=>getQrCode(item)")
-    #QrCode(v-if="qrCode" @click="qrCode=''")
-      img.qr(:src="qrCode")
-
+        img.morePic(:src="moreImage" @click.stop="(e)=>clickItem(e.target,item)")
+    QRCode(ref="qrCodeIns")
+    SubMenu(ref="subMenuIns")
 </template>
 
 <script setup>
@@ -34,8 +33,10 @@ import wavImage from '@/assets/img/wav.png'
 import boredImage from '@/assets/img/bored.png'
 import tsundereImage from '@/assets/img/tsundere.png'
 import moreImage from '@/assets/img/more.png'
-import QRCode from 'qrcode'
+import QRCode from './qrCode/index.vue'
+import SubMenu from '@/components/components/subMenu.vue'
 
+const musicIns = ref()
 const selectIns = ref()
 const musicTypeSrcMap = {
   '.flac': flacImage,
@@ -55,12 +56,27 @@ watch(selectIns, () => {
     block: 'center'
   })
 })
-const qrCode = ref('')
-const getQrCode = async (item) => {
-  const url = `http://${window.serve.getIp()}:3000/getMusic/${window.serve.getFileKey(item.path)}/${
-    item.fileName
-  }`
-  qrCode.value = await QRCode.toDataURL(url)
+const subMenuIns = ref()
+const qrCodeIns = ref()
+const share = async (item) => {
+  qrCodeIns.value.display(item)
+}
+const displayInfo = async (item) => {
+  console.log(item)
+}
+const clickItem = (icon, item) => {
+  const rect = icon.getBoundingClientRect()
+  const musicRect = musicIns.value.getBoundingClientRect()
+  subMenuIns.value.display(
+    {
+      share: () => share(item),
+      displayInfo: () => displayInfo(item)
+    },
+    {
+      x: musicRect.x + musicRect.width - rect.x - rect.width + 10,
+      y: rect.y - musicRect.y + rect.height / 2
+    }
+  )
 }
 </script>
 
@@ -111,18 +127,6 @@ const getQrCode = async (item) => {
       .morePic
         &:hover
           background-color rgba(225,107,140,.4)
-  #QrCode
-    position absolute
-    top 50%
-    left 50%
-    transform translate(-50%,-50%)
-    border 10px dotted rgb(235,180,113)
-    padding 10px
-    border-radius 10px
-    background-color #FFFFFF
-    .qr
-      width 200px
-      height 200px
 #music.empty
   display flex
   flex-direction column
