@@ -4,7 +4,6 @@ audio(
   ref="audioIns"
   @loadeddata="onLoaded"
   autoplay="false"
-  @timeupdate="onCurrentUpdate"
   @play="onPlay"
   @pause="onPause"
   @ended="onEnded"
@@ -20,10 +19,7 @@ const getSettingStore = settingStore()
 const audioIns = ref()
 const musicData = ref()
 // 监听事件
-const onCurrentUpdate = (e) => {
-  getControllerStore.current = audioIns.value.currentTime
-  emits('currentChanged', audioIns.value.currentTime)
-}
+
 const onLoaded = () => {}
 const onPlay = () => {
   getControllerStore.isPlaying = true
@@ -79,6 +75,30 @@ watch(
     immediate: getSettingStore.playImmediate
   }
 )
+// 高频率刷新current
+const onCurrentUpdate = () => {
+  getControllerStore.current = audioIns.value.currentTime
+  emits('currentChanged', audioIns.value.currentTime)
+}
+let interval
+watch(
+  computed(() => ({
+    isPlaying: getControllerStore.isPlaying,
+    currentRefreshInterval: getSettingStore.currentRefreshInterval
+  })),
+  (data) => {
+    clearInterval(interval)
+    if (data.isPlaying) {
+      interval = setInterval(onCurrentUpdate, data.currentRefreshInterval)
+    }
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
-<style scoped lang="stylus"></style>
+<style scoped lang="stylus">
+audio
+  display none
+</style>

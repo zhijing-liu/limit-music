@@ -9,7 +9,7 @@
     img.icon(:src="lastImage")
   .center(@mouseenter="centerMouseEnter")
     Transition(name="fade-quick")
-      Progress(v-if="centerActive" :current="Math.ceil(getControllerStore.current)" :length="Math.round(musicInfo.duration)" @setProgress="setProgress")
+      Progress(v-if="centerActive" :current="getControllerStore.current" :length="musicInfo.duration" @setProgress="setProgress")
       .musicName(v-else)
         .musicNameText {{musicInfo.title??'嗨！欢迎回来'}}
         .musicNameSubtitle

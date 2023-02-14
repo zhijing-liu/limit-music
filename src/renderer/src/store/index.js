@@ -102,6 +102,7 @@ const settings = {
   webServeEnable: true,
   webServePort: 4000,
   progressBarAllowSlide: false,
+  currentRefreshInterval: 80,
   ...JSON.parse(localStorage.getItem('setting') ?? '{}')
 }
 export const settingStore = defineStore('setting', {

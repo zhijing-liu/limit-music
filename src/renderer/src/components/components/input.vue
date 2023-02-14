@@ -1,13 +1,13 @@
 <template lang="pug">
 .input(@click="setFocus")
-  input.inputArea(v-if="inputShow" ref="inputAreaIns" :value="props.value" @blur="blur")
+  input.inputArea(v-if="inputShow" ref="inputAreaIns" :value="props.value" @blur="blur" @change="blur")
   span(v-else) {{value}}
 </template>
 
 <script setup>
 import { nextTick, onBeforeUnmount, ref } from 'vue'
 
-const props = defineProps(['value'])
+const props = defineProps(['value', 'mode', 'min', 'max'])
 const emits = defineEmits(['update:value'])
 const inputAreaIns = ref()
 const inputShow = ref(false)
@@ -20,7 +20,16 @@ const setFocus = () => {
 const blur = (e) => {
   inputShow.value = false
   if (e.target.value !== props.value) {
-    emits('update:value', e.target.value)
+    let v = e.target.value
+    if (props.mode === 'number') {
+      if (props.max !== undefined) {
+        v = Math.min(props.max, +v)
+      }
+      if (props.min !== undefined) {
+        v = Math.max(props.min, +v)
+      }
+    }
+    emits('update:value', v)
   }
 }
 </script>

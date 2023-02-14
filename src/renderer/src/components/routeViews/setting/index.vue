@@ -11,14 +11,16 @@
         .title {{settingGroups[tabKey].title}}设置
         .body
           template(v-for="item in settingGroups[tabKey].items.filter((i)=>!i.hide)")
-            .item(v-if="item.type==='switch'")
+            .item(v-if="item.type==='switch'" :key="item.index")
               .label {{item.label}}
                 Warning(v-if="item.warning" :info="item.warning")
               Switch(v-model:active="item.value")
-            .item(v-if="item.type==='input'")
-              .label {{item.label}}
+            .item(v-if="item.type==='input'" :key="item.index")
+              .label {{item.label}}{{item.min&&item.max?`     [ ${item.min} - ${item.max}${item.unit??''} ]`:''}}
                 Warning(v-if="item.warning" :info="item.warning")
-              Input(v-model:value="item.value")
+              .right
+                Input(v-model:value="item.value" :mode="item.mode" :min="item.min" :max="item.max")
+                .unit {{item.unit}}
 </template>
 
 <script setup>
@@ -40,6 +42,7 @@ const settingGroups = reactive({
     items: [
       {
         label: '点击关闭后最小化到托盘',
+        index: 'window-1',
         value: computed({
           get: () => getSettingStore.toTrayWhenClickClose,
           set: (v) => (getSettingStore.toTrayWhenClickClose = v)
@@ -55,6 +58,7 @@ const settingGroups = reactive({
     items: [
       {
         label: '打开app立即播放',
+        index: 'play-1',
         value: computed({
           get: () => getSettingStore.playImmediate,
           set: (v) => (getSettingStore.playImmediate = v)
@@ -63,12 +67,27 @@ const settingGroups = reactive({
       },
       {
         label: '进度条可滑动调节',
+        index: 'play-2',
         value: computed({
           get: () => getSettingStore.progressBarAllowSlide,
           set: (v) => (getSettingStore.progressBarAllowSlide = v)
         }),
         warning: '滑动调节会变相打断播放进度,可能破坏播放体验',
         type: 'switch'
+      },
+      {
+        label: '播放帧刷新间隔',
+        index: 'play-3',
+        value: computed({
+          get: () => getSettingStore.currentRefreshInterval,
+          set: (v) => (getSettingStore.currentRefreshInterval = isNaN(+v) ? 80 : +v)
+        }),
+        warning: '更新速度过快会占用更多cpu资源并消耗较多的电量',
+        type: 'input',
+        mode: 'number',
+        unit: 'ms',
+        min: 20,
+        max: 300
       }
     ]
   },
@@ -78,6 +97,7 @@ const settingGroups = reactive({
     items: [
       {
         label: '深度检索',
+        index: 'scan-1',
         value: computed({
           get: () => getSettingStore.deepScan,
           set: (v) => (getSettingStore.deepScan = v)
@@ -93,6 +113,7 @@ const settingGroups = reactive({
     items: [
       {
         label: '开启网络服务',
+        index: 'webServe-1',
         value: computed({
           get: () => getSettingStore.webServeEnable,
           set: (v) => (getSettingStore.webServeEnable = v)
@@ -101,11 +122,15 @@ const settingGroups = reactive({
       },
       {
         label: '网络服务端口',
+        index: 'webServe-2',
         value: computed({
           get: () => getSettingStore.webServePort,
           set: (v) => (getSettingStore.webServePort = isNaN(+v) ? 4000 : +v)
         }),
-        type: 'input'
+        type: 'input',
+        mode: 'number',
+        min: 1,
+        max: 65534
       }
     ]
   }
@@ -192,4 +217,11 @@ watch(getSettingStore, () => {
             align-items center
             .warning
               margin 0 15px
+          .right
+            display flex
+            align-items center
+            .unit
+              font-size 12px
+              padding-left 5px
+              font-weight bolder
 </style>

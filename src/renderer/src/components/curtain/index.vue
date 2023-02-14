@@ -61,6 +61,17 @@ watch(
     -webkit-transform:translateY(-15px);
   }
 }
+@-webkit-keyframes reverse-bounce{/*创建动画*/
+  0%,100%,20%,50%,80%{
+    -webkit-transform:translateY(-30px);
+  }
+  40%{
+    -webkit-transform:translateY(-15px);
+  }
+  60%{
+    -webkit-transform:translateY(0);
+  }
+}
 #curtain
   position fixed
   top 0
@@ -75,8 +86,11 @@ watch(
   align-items center
   .logo
     height 30vh
+    animation reverse-bounce 1.5s infinite
   .mainTitle
     font-size 10vh
+    animation reverse-bounce 1.5s infinite
+    animation-delay 0.5s
   .subTitle
     width 80vw
     font-size 4vh
@@ -88,5 +102,6 @@ watch(
       0 4px 0 rgba(248, 195, 205, .4),
       0 5px 10px rgba(248, 195, 205, .4)
     color rgb(232, 122, 144)
-    animation:bounce 1s infinite
+    animation bounce 1.5s infinite
+    animation-delay 1s
 </style>
