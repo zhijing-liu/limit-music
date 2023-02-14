@@ -16,7 +16,9 @@ template(v-else)
         :ref="(itemIns)=>{getControllerStore.playingUrl===item.path&&(selectIns=itemIns)}"
         )
         img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
-        .musicName {{item.title}}
+        .musicInfo
+          .musicName {{item.title}}
+          .musicArtists {{item.artists?.join(' ')}}
         .space
         img.morePic(:src="moreImage" @click.stop="(e)=>clickItem(e.target,item)")
     QRCode(ref="qrCodeIns")
@@ -119,6 +121,16 @@ const clickItem = (icon, item) => {
         border-radius 10px
         &:hover
           background-color rgba(165,222,228,.4)
+      .musicInfo
+        flex 1 0 0
+        .musicName
+          font-weight bold
+          font-size 15px
+          padding-top 2px
+          padding-bottom 3px
+        .musicArtists
+          font-size 12px
+          line-height 12px
     .musicItem.playing
       background-color rgba(225,107,140,.2)
       &:hover

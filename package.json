@@ -1,6 +1,6 @@
 {
   "name": "limit-music",
-  "version": "0.0.5-dev",
+  "version": "0.0.6-dev",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
   "author": "example.com",

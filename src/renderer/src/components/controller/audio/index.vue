@@ -50,6 +50,11 @@ const pause = () => {
   audioIns.value.pause()
 }
 const setDefault = () => {}
+const setCurrent = (current) => {
+  if (getControllerStore.isPlaying) {
+    audioIns.value.currentTime = current ?? 0
+  }
+}
 const loadData = async () => {
   musicData.value = URL.createObjectURL(
     new File(
@@ -60,7 +65,8 @@ const loadData = async () => {
 }
 defineExpose({
   play,
-  pause
+  pause,
+  setCurrent
 })
 // watch
 watch(

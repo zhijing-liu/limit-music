@@ -7,11 +7,14 @@
     img.icon(:src="getControllerStore.isPlaying?pauseImage:playImage")
   .button(@click="last")
     img.icon(:src="lastImage")
-  .musicName
-    .musicNameText {{musicInfo.title??'嗨！欢迎回来'}}
-    .musicNameSubtitle
-      .time(v-if="musicInfo.duration" ) {{Math.ceil(getControllerStore.current)}} / {{Math.round(musicInfo.duration)}}s
-      .artists -- {{musicInfo.artists?.join(' ')??'纸境工作室'}}
+  .center(@mouseenter="centerMouseEnter")
+    Transition(name="fade-quick")
+      Progress(v-if="centerActive" :current="Math.ceil(getControllerStore.current)" :length="Math.round(musicInfo.duration)" @setProgress="setProgress")
+      .musicName(v-else)
+        .musicNameText {{musicInfo.title??'嗨！欢迎回来'}}
+        .musicNameSubtitle
+          .time(v-if="musicInfo.duration" ) {{Math.ceil(getControllerStore.current)}} / {{Math.round(musicInfo.duration)}}s
+          .artists -- {{musicInfo.artists?.join(' ')??'纸境工作室'}}
   .button(@click="next")
     img.icon(:src="nextImage")
   .button(@click="setPlayMode")
@@ -21,6 +24,7 @@ AudioComponent(ref="audioIns" @playEnd="next")
 
 <script setup>
 import AudioComponent from './audio/index.vue'
+import Progress from './progress/index.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { controllerStore } from '@/store'
 import playImage from '@/assets/img/play.png'
@@ -30,10 +34,14 @@ import nextImage from '@/assets/img/next.png'
 import musicImage from '@/assets/img/music.png'
 import defaultImage from '@/assets/img/default.png'
 import randomImage from '@/assets/img/random.png'
+
 const playModeMap = reactive({
   default: defaultImage,
   random: randomImage
 })
+const setProgress = (current) => {
+  audioIns.value.setCurrent(current)
+}
 const setPlayMode = () => {
   getControllerStore.playMode = getControllerStore.playMode === 'default' ? 'random' : 'default'
   localStorage.setItem('playMode', getControllerStore.playMode)
@@ -108,6 +116,15 @@ watch(
     immediate: true
   }
 )
+const centerActive = ref(false)
+const centerMouseEnter = (e) => {
+  centerActive.value = true
+  const leave = () => {
+    centerActive.value = false
+    e.target.removeEventListener('mouseleave', leave)
+  }
+  e.target.addEventListener('mouseleave', leave)
+}
 </script>
 
 <style scoped lang="stylus">
@@ -142,24 +159,34 @@ watch(
       height 45px
       border-radius 4px
       overflow hidden
-  .musicName
+  .center
     width 50vw
+    height 100%
+    position relative
     display flex
     align-items center
-    flex-direction column
-    .musicNameText
-      font-size 22px
-      font-weight bolder
-      max-width 90%
-      overflow hidden
-      white-space nowrap
-      text-overflow ellipsis
-    .musicNameSubtitle
-      font-size 12px
-      width 80%
-      font-weight bolder
+    .musicName
+      position absolute
+      width 100%
+      height 100%
+      left 0
       display flex
-      justify-content space-between
+      align-items center
+      flex-direction column
+      justify-content space-around
+      .musicNameText
+        font-size 22px
+        font-weight bolder
+        max-width 90%
+        overflow hidden
+        white-space nowrap
+        text-overflow ellipsis
+      .musicNameSubtitle
+        font-size 12px
+        width 80%
+        font-weight bolder
+        display flex
+        justify-content space-between
   .button
     width 45px
     height 45px
