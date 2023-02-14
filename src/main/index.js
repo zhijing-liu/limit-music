@@ -39,7 +39,7 @@ async function createWindow() {
   })
   tray = new Tray(icon)
   tray.addListener('click', () => {
-    mainWindow.show()
+    mainWindow[mainWindow.isVisible() ? 'hide' : 'show']()
   })
   tray.setContextMenu(
     Menu.buildFromTemplate([
