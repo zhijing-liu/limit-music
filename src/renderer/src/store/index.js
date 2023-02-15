@@ -57,6 +57,7 @@ export const controllerStore = defineStore('controller', {
     isPlaying: false,
     playMode: localStorage.getItem('playMode') ?? 'default', // 'default' 'random',
     audioPlayerInstance: null,
+    searchValue: '',
     musicInfoDb
   }),
   getters: {
@@ -64,7 +65,14 @@ export const controllerStore = defineStore('controller', {
       return state.musicMap?.[state.playingUrl] ?? {}
     },
     getMusicDisplayList(state) {
-      return Object.values(state.musicMap)
+      if (state.searchValue === '') {
+        return Object.values(state.musicMap)
+      } else {
+        const regExp = new RegExp(state.searchValue, 'gi')
+        return Object.values(state.musicMap).filter((music) => {
+          return regExp.test(Object.values(music).toString())
+        })
+      }
     },
     getMusicPlayList(state) {
       // 播放序列

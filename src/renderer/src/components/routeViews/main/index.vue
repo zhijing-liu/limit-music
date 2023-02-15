@@ -1,5 +1,5 @@
 <template lang="pug">
-template(v-if="getControllerStore.getMusicDisplayList.length===0")
+template(v-if="getControllerStore.getMusicMapLength===0")
   #music.empty.pointing(@click="toScan")
     img.icon.boredImage(:src="boredImage")
     img.icon.tsundereImage(:src="tsundereImage")
@@ -7,23 +7,28 @@ template(v-if="getControllerStore.getMusicDisplayList.length===0")
     .clickInfo 快点我去搜索啦！
 template(v-else)
   #music(ref="musicIns")
-    #musicList.noScrollBar(ref="musicListIns")
-      TransitionGroup(name="fade")
-        .musicItem.pointing(
-          v-for="item in getControllerStore.getMusicDisplayList"
-          @click="()=>playMusic(item)"
-          :key="item.path"
-          :class="{playing:getControllerStore.playingUrl===item.path,disabled:!item.access}"
-          :ref="(itemIns)=>{getControllerStore.playingUrl===item.path&&(selectIns=itemIns)}"
-          )
-          img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
-          .musicInfo
-            .musicName {{item.title}}
-            .musicArtists {{item.artists?.join(' ')}}
-          img.morePic(:src="moreImage" @click.stop="(e)=>clickItem(e.target,item)")
+    Transition(name="fade")
+      #musicList.empty(v-if="getControllerStore.getMusicDisplayList.length===0")
+        img.icon.boredImage(:src="pleaseImage")
+        .emptyInfo 确实没找到啊。。。
+      #musicList.noScrollBar(ref="musicListIns" v-else)
+        TransitionGroup(name="expansion-row")
+          .musicItem.pointing(
+            v-for="item in getControllerStore.getMusicDisplayList"
+            @click="()=>playMusic(item)"
+            :key="item.path"
+            :class="{playing:getControllerStore.playingUrl===item.path,disabled:!item.access}"
+            :ref="(itemIns)=>{getControllerStore.playingUrl===item.path&&(selectIns=itemIns)}"
+            )
+            img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
+            .musicInfo
+              .musicName {{item.title}}
+              .musicArtists {{item.artists?.join(' ')}}
+            img.morePic(:src="moreImage" @click.stop="(e)=>clickItem(e.target,item)")
     QRCode(ref="qrCodeIns")
     SubMenu(ref="subMenuIns")
     MusicInfo(ref="musicInfoIns")
+    Sidebar
 </template>
 
 <script setup>
@@ -36,9 +41,11 @@ import wavImage from '@/assets/img/wav.png'
 import boredImage from '@/assets/img/bored.png'
 import tsundereImage from '@/assets/img/tsundere.png'
 import moreImage from '@/assets/img/more.png'
+import pleaseImage from '@/assets/img/please.png'
 import QRCode from './qrCode/index.vue'
 import SubMenu from '@/components/components/subMenu.vue'
 import MusicInfo from './musicInfo/index.vue'
+import Sidebar from './sidebar/index.vue'
 
 const musicIns = ref()
 const selectIns = ref()
@@ -98,18 +105,18 @@ const clickItem = (icon, item) => {
     box-sizing border-box
     display flex
     flex-direction column
-    justify-content space-between
     overflow auto
     scroll-behavior smooth
     .musicItem
       height 40px
-      flex 1 0 40px
+      flex 0 0 40px
       display flex
       align-items center
       background-color rgba(165,222,228,.2)
       margin-bottom 10px
       padding 10px 18px
       border-radius 15px
+      overflow hidden
       &:hover
         background-color rgba(165,222,228,.4)
         box-shadow 0 0 10px 5px rgba(165,222,228,.4)
@@ -150,12 +157,24 @@ const clickItem = (icon, item) => {
       .morePic
         &:hover
           background-color rgba(144,144,144,.4)
+  #musicList.empty
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 100%
+    justify-content center
+    align-items center
+    font-size 22px
+    font-weight bolder
+    letter-spacing 3px
 #music.empty
   display flex
   flex-direction column
   justify-content center
   align-items center
   border-radius 20px
+  transition all 0.8s
   .clickInfo
   .emptyInfo
     font-size 22px
@@ -164,7 +183,6 @@ const clickItem = (icon, item) => {
   .clickInfo
   .tsundereImage
     display none
-  transition all 0.8s
   &:hover
     background-color rgba(235,122,119,.1)
     .emptyInfo
@@ -173,4 +191,23 @@ const clickItem = (icon, item) => {
     .clickInfo
     .tsundereImage
       display block
+// 动画
+.expansion-row-enter-active
+  transition all 0.3s
+.expansion-row-leave-active
+  transition all 0.3s
+.expansion-row-enter-from,
+.expansion-row-leave-to
+  height 0 !important
+  flex 0 0 0 !important
+  padding 0 18px !important
+  margin-bottom 0 !important
+  opacity 0
+.expansion-row-enter-to,
+.expansion-row-leave-from
+  height 40px !important
+  flex 0 0 40px !important
+  padding 10px 18px !important
+  margin-bottom 10px !important
+  opacity 1
 </style>

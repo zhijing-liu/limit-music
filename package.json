@@ -1,9 +1,9 @@
 {
   "name": "limit-music",
   "version": "0.0.6-dev",
-  "description": "An Electron application with Vue",
+  "description": "limit-music 年轻人的第一个音乐播放器",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "纸境工作室",
   "homepage": "https://www.electronjs.org",
   "scripts": {
     "start": "electron-vite preview",
