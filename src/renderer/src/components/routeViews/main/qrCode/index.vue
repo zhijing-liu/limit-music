@@ -77,6 +77,7 @@ const afterLeave = () => {
   justify-content center
   align-items center
   background-color rgba(255,255,255,.8)
+  z-index 100
   .title
     padding 15px 30px
     font-size 32px

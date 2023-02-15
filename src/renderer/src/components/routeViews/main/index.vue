@@ -64,11 +64,12 @@ const playMusic = (item) => {
 const toScan = () => {
   router.push({ name: 'scan' })
 }
-watch(selectIns, () => {
+const scrollTo = () => {
   selectIns.value?.scrollIntoView({
     block: 'center'
   })
-})
+}
+watch(selectIns, scrollTo)
 const subMenuIns = ref()
 const qrCodeIns = ref()
 const share = async (item) => {

@@ -19,11 +19,15 @@ const musicInfoDbKeys = {
       year: true,
       dirPath: true,
       title: true,
-      duration: true
+      duration: true,
+      lossless: true, // 无损
+      sampleRate: true, // 采样率
+      codec: true, // 编码
+      bitsPerSample: true // bit
     }
   }
 }
-musicInfoDb.version(1).stores({
+musicInfoDb.version(2).stores({
   musicItem: `${musicInfoDbKeys.musicItem.key},${Object.keys(musicInfoDbKeys.musicItem.line).join(
     ','
   )}` // Primary key and indexed props

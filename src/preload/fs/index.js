@@ -38,8 +38,13 @@ export const getMusicInfo = async (
     artists: fileInfo.common.artists,
     album: fileInfo.common.album,
     duration: fileInfo.format.duration,
+    lossless: fileInfo.format.lossless, // 无损
+    sampleRate: fileInfo.format.sampleRate, // 采样率
+    codec: fileInfo.format.codec, // 编码
+    bitsPerSample: fileInfo.format.bitsPerSample, // bit
     path
   }
+  console.log(data)
   if (lyric) {
     const lyricList = []
     if (fileInfo.common.lyrics) {

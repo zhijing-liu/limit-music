@@ -1,20 +1,20 @@
 <template lang="pug">
-#sidebar(@mouseleave="leave" @mouseenter="enter" :class="{active:visible}" ref="sidebarIns" )
+#sidebar(@mouseleave="displayInfo.mouseenter=false" @mouseenter="displayInfo.mouseenter=true" :class="{active:visible}" ref="sidebarIns" )
   .dragBar
-    img.arrow(:src="arrowHeadImage" @mouseover="active" :class="{active:visible}")
+    img.arrow(:src="arrowHeadImage" :class="{active:visible}")
   .icons
     img.search.pointing(:src="searchImage" @click="action=action==='search'?'':'search'")
   Transition(name="expansion")
     .action(v-if="action==='search'")
       .search.pointing
-        input.searchArea(:value="getControllerStore.searchValue" @change="search")
+        input.searchArea(:value="getControllerStore.searchValue" @change="search" @focus="displayInfo.hasBlur=true" @blur="displayInfo.hasBlur=false")
         .searchButton 搜索
 </template>
 
 <script setup>
 import arrowHeadImage from '@/assets/img/arrowHead.png'
 import searchImage from '@/assets/img/search.png'
-import { ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { controllerStore } from '@/store'
 
 const getControllerStore = controllerStore()
@@ -22,25 +22,25 @@ const sidebarIns = ref()
 const visible = ref(false)
 const action = ref('')
 let leaveTimer = null
-const leave = (e) => {
-  if (!sidebarIns.value.contains(document.activeElement)) {
+const displayInfo = reactive({
+  mouseenter: false,
+  hasBlur: false
+})
+
+const search = (e) => {
+  getControllerStore.searchValue = e.target.value
+}
+watch(displayInfo, () => {
+  if (displayInfo.mouseenter || displayInfo.hasBlur) {
+    clearTimeout(leaveTimer)
+    visible.value = true
+  } else if (!displayInfo.mouseenter) {
     leaveTimer = setTimeout(() => {
       visible.value = false
       action.value = ''
     }, 500)
   }
-}
-const enter = () => {
-  clearTimeout(leaveTimer)
-}
-const active = () => {
-  enter()
-  visible.value = true
-}
-
-const search = (e) => {
-  getControllerStore.searchValue = e.target.value
-}
+})
 </script>
 
 <style scoped lang="stylus">
@@ -55,6 +55,7 @@ const search = (e) => {
   padding 30px 0
   border 2px dashed transparent
   border-right 0
+  z-index 10
   .dragBar
     display flex
     align-items center

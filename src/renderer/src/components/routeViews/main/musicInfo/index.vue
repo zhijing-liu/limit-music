@@ -26,6 +26,15 @@ Transition(name="fullDown-quick" @after-leave="afterLeave")
       .item
         .label 路径
         .value {{item?.path}}
+      .item
+        .label 无损
+        .value {{item?.lossless}}
+      .item
+        .label 编码
+        .value {{item?.sampleRate}}
+      .item
+        .label 位深
+        .value {{item?.bitsPerSample}}bit
     .closeButton
       img.icon(:src="putAwayImage")
       .label 收起
@@ -80,6 +89,7 @@ const afterLeave = () => {
   justify-content center
   align-items center
   background-color rgba(255,255,255,.8)
+  z-index 100
   .items
     width 80%
     display flex
@@ -93,7 +103,7 @@ const afterLeave = () => {
       align-items center
       font-size 14px
       font-weight bolder
-      padding 15px
+      padding 10px 15px
   .closeButton
     display flex
     font-size 13px
