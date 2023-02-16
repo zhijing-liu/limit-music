@@ -30,7 +30,7 @@ export const getMusicInfo = async (
 ) => {
   const stream = createReadStream(path)
   const fileInfo = await parseNodeStream(stream)
-  console.log(fileInfo)
+  // console.log(fileInfo)
   stream.close()
   const data = {
     title: fileInfo.common.title,

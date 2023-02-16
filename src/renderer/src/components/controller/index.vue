@@ -63,7 +63,7 @@ const getControllerStore = controllerStore()
 const audioIns = ref()
 
 const playPause = (actionName) => {
-  audioIns.value[actionName ?? getControllerStore.isPlaying ? 'pause' : 'play']()
+  audioIns.value[actionName ?? (getControllerStore.isPlaying ? 'pause' : 'play')]()
 }
 const next = () => {
   if (getControllerStore.getMusicMapLength === getControllerStore.getPlayIndex) {
