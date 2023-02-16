@@ -1,7 +1,7 @@
 <template lang="pug">
-#sidebar(@mouseleave="displayInfo.mouseenter=false" @mouseenter="displayInfo.mouseenter=true" :class="{active:visible}" ref="sidebarIns" )
+#sidebar(@mouseleave="mouseleaveEvent" :class="{active:visible}" ref="sidebarIns" )
   .dragBar
-    img.arrow(:src="arrowHeadImage" :class="{active:visible}")
+    img.arrow(:src="arrowHeadImage" :class="{active:visible}" @mouseenter="addEvent")
   .icons
     img.search.pointing(:src="searchImage" @click="action=action==='search'?'':'search'")
   Transition(name="expansion")
@@ -26,7 +26,16 @@ const displayInfo = reactive({
   mouseenter: false,
   hasBlur: false
 })
-
+const mouseenterEvent = () => {
+  displayInfo.mouseenter = true
+}
+const mouseleaveEvent = () => {
+  displayInfo.mouseenter = false
+}
+const addEvent = () => {
+  displayInfo.mouseenter = true
+  sidebarIns.value.addEventListener('mouseenter', mouseenterEvent)
+}
 const search = (e) => {
   getControllerStore.searchValue = e.target.value
 }
@@ -38,6 +47,7 @@ watch(displayInfo, () => {
     leaveTimer = setTimeout(() => {
       visible.value = false
       action.value = ''
+      sidebarIns.value.removeEventListener('mouseenter', mouseenterEvent)
     }, 500)
   }
 })

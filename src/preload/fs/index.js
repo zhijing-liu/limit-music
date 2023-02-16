@@ -125,9 +125,13 @@ export const scanMusicByPath = async (dirPath, deep = false) => {
   return map
 }
 export const getPlayUrl = async (path) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     readFile(path, (err, data) => {
-      resolve(data)
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data)
+      }
     })
   })
 }
