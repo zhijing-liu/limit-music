@@ -3,7 +3,7 @@
   .album(@click="lyricVisible=true")
     img.blurBak(:src="musicInfo.albumPic??musicImage")
     img.albumPic(:src="musicInfo.albumPic??musicImage")
-  .button(@click="playPause")
+  .button(@click="()=>playPause()")
     img.icon(:src="getControllerStore.isPlaying?pauseImage:playImage")
   .button(@click="last")
     img.icon(:src="lastImage")
@@ -62,8 +62,8 @@ const setPlayMode = () => {
 const getControllerStore = controllerStore()
 const audioIns = ref()
 
-const playPause = (actionName) => {
-  audioIns.value[actionName ?? (getControllerStore.isPlaying ? 'pause' : 'play')]()
+const playPause = (actionName = getControllerStore.isPlaying ? 'pause' : 'play') => {
+  audioIns.value[actionName]()
 }
 const next = () => {
   if (getControllerStore.getMusicMapLength === getControllerStore.getPlayIndex) {
