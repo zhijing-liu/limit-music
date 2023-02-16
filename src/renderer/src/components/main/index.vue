@@ -2,8 +2,8 @@
 #Main
   LeftBar
   RouterView.body(v-slot="{Component}")
-    KeepAlive
-      Transition(name="fade" mode="out-in" :duration="{ enter: 500, leave: 250 }")
+    Transition(name="fade" mode="out-in" :duration="{ enter: 500, leave: 250 }")
+      KeepAlive
         component(:is="Component")
 </template>
 

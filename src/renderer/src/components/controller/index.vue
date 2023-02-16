@@ -21,12 +21,17 @@
     img.icon(:src="playModeMap[getControllerStore.playMode]")
 AudioComponent(ref="audioIns" @playEnd="next")
 Transition(name="floatUp")
-  Lyric(
-    :musicInfo="musicInfo"
-    v-if="lyricVisible"
-    @close="lyricVisible=false"
-    @setProgress="setProgress"
-    )
+  KeepAlive
+    Lyric(
+      v-if="lyricVisible"
+      v-model:visible="lyricVisible"
+      :musicInfo="musicInfo"
+      @setProgress="setProgress"
+      @play="()=>playPause('play')"
+      @pause="()=>playPause('pause')"
+      @last="last"
+      @next="next"
+      )
 </template>
 
 <script setup>
@@ -57,8 +62,8 @@ const setPlayMode = () => {
 const getControllerStore = controllerStore()
 const audioIns = ref()
 
-const playPause = () => {
-  audioIns.value[getControllerStore.isPlaying ? 'pause' : 'play']()
+const playPause = (actionName) => {
+  audioIns.value[actionName ?? getControllerStore.isPlaying ? 'pause' : 'play']()
 }
 const next = () => {
   if (getControllerStore.getMusicMapLength === getControllerStore.getPlayIndex) {

@@ -23,7 +23,11 @@ template(v-else)
             img.musicTypePic(:src="musicTypeSrcMap[item.suffix]")
             .musicInfo
               .musicName {{item.title}}
-              .musicArtists {{item.artists?.join(' ')}}
+              .musicArtists
+                //span.lossless(v-if="item.lossless&&item.bitsPerSample>=24&&item.sampleRate>44100") HR
+                //span.lossless(v-else-if="item.lossless&&item.bitsPerSample>=16") SQ
+                //span.lossless(v-else-if="item.lossless&&item.bitsPerSample>=16") HQ
+                span {{item.artists?.join(' ')}}
             img.morePic(:src="moreImage" @click.stop="(e)=>clickItem(e.target,item)")
     QRCode(ref="qrCodeIns")
     SubMenu(ref="subMenuIns")
@@ -38,6 +42,7 @@ import { useRouter } from 'vue-router'
 import flacImage from '@/assets/img/flac.png'
 import mp3Image from '@/assets/img/mp3.png'
 import wavImage from '@/assets/img/wav.png'
+import m4aImage from '@/assets/img/m4a.png'
 import boredImage from '@/assets/img/bored.png'
 import tsundereImage from '@/assets/img/tsundere.png'
 import moreImage from '@/assets/img/more.png'
@@ -52,7 +57,8 @@ const selectIns = ref()
 const musicTypeSrcMap = {
   '.flac': flacImage,
   '.mp3': mp3Image,
-  '.wav': wavImage
+  '.wav': wavImage,
+  '.m4a': m4aImage
 }
 const getControllerStore = controllerStore()
 const router = useRouter()
@@ -142,6 +148,17 @@ const clickItem = (icon, item) => {
         .musicArtists
           font-size 12px
           line-height 12px
+          display flex
+          .lossless
+            height 12px
+            font-size 12px
+            font-weight bold
+            padding 1px 2px 2px
+            background-color #f3c52e
+            color #FFFFFF
+            zoom 0.8
+            margin-right 5px
+            font-family SF Pro SC,SF Pro Display,SF Pro Icons,AOS Icons,PingFang SC,Helvetica Neue,Helvetica,Arial,sans-serif
     .musicItem.playing
       background-color rgba(225,107,140,.2)
       &:hover

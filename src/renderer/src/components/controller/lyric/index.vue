@@ -1,31 +1,30 @@
 <template lang="pug">
 #lyricBoard
-  img.closeButton(:src="downImage" @click="emits('close')")
+  img.closeButton(:src="downImage" @click="emits('update:visible',false)")
   img.fullScreenButton(:src="fullScreenImage" @click="fullScreen")
   .album
     img.blurBak(:src="musicInfo.albumPic")
-    img.albumPic(:src="musicInfo.albumPic")
+    .albumPic(:style="`background-image: url('${musicInfo.albumPic}')`")
   #lyrics.noScrollBar
-    .lyricBlock
-    .lyric.pointing(
+    .lyric.pointing.pinYin(
       v-for="({time,lyric},index) in musicInfo.lyricList"
       :class="{light:index===step-1}"
       :key="index"
       :ref="(el)=>index===step-1&&(lyricIns=el)"
       @wheel="wheel"
-    )
-      span.lyricValue.pinYin(@click.stop="()=>changeProgress(time)") {{ lyric }}
+      @click.stop="()=>changeProgress(time)"
+    ) {{ lyric }}
   .back(:style="`background-image:url('${musicInfo.albumPic}')`")
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { controllerStore } from '@/store'
 import downImage from '@/assets/img/down.png'
 import fullScreenImage from '@/assets/img/fullScreen.png'
 
-const props = defineProps(['musicInfo'])
-const emits = defineEmits(['setProgress', 'close'])
+const props = defineProps(['musicInfo', 'visible'])
+const emits = defineEmits(['setProgress', 'update:visible', 'play', 'pause', 'last', 'next'])
 const lyricIns = ref()
 const getControllerStore = controllerStore()
 const timeStep = computed(() => getControllerStore.current ?? 0)
@@ -76,6 +75,33 @@ const wheel = () => {
 const fullScreen = () => {
   window.underlying.fullScreen()
 }
+const keyBoardMap = {
+  Esc: () => {
+    emits('update:visible', false)
+  },
+  Space: () => {
+    emits(getControllerStore.isPlaying ? 'pause' : 'play')
+  },
+  ArrowLeft: () => {
+    emits('last')
+  },
+  ArrowRight: () => {
+    emits('next')
+  }
+}
+const keyBoardEvent = (e) => {
+  console.log(e.code)
+  keyBoardMap[e.code]?.(e)
+}
+watch(
+  computed(() => props.visible),
+  () => {
+    document[props.visible ? 'addEventListener' : 'removeEventListener']('keydown', keyBoardEvent)
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
 <style scoped lang="stylus">
@@ -126,8 +152,9 @@ const fullScreen = () => {
     .albumPic
       width 75%
       height 75%
-      border-radius 4px
+      border-radius 10%
       overflow hidden
+      background-size contain
   #lyrics
     display flex
     flex-direction column
@@ -137,18 +164,15 @@ const fullScreen = () => {
     box-sizing border-box
     border 30px solid transparent
     scroll-behavior smooth
+    align-items center
     .lyric
-      height 45px
-      line-height 45px
-      font-size 3vh
       color #222222
       font-weight bold
-      text-align center
-      flex 0 0 45px
       word-wrap anywhere
       transition all 0.8s
-      .lyricValue
-        padding 5px 11px
+      min-height 5.4vh
+      line-height 5.4vh
+      font-size 3vh
     .lyric.light
       color #FFFFFF
   .back
