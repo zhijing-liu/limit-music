@@ -12,7 +12,7 @@
       :key="index"
       :ref="(el)=>index===step-1&&(lyricIns=el)"
       @wheel="wheel"
-      @click.stop="()=>changeProgress(time)"
+      @click.stop="()=>changeProgress((time + 1) / 1000)"
     ) {{ lyric }}
   .back(:style="`background-image:url('${musicInfo.albumPic}')`")
 </template>
@@ -59,7 +59,7 @@ watchEffect(() => {
     })
 })
 const changeProgress = (time) => {
-  emits('setProgress', (time + 1) / 1000)
+  emits('setProgress', time)
   allowLocating.value = true
   clearTimeout(wheelTimer)
 }
@@ -83,10 +83,16 @@ const keyBoardMap = {
     emits(getControllerStore.isPlaying ? 'pause' : 'play')
   },
   ArrowLeft: () => {
-    emits('last')
+    changeProgress(Math.max(0, getControllerStore.current - 5))
   },
   ArrowRight: () => {
+    changeProgress(getControllerStore.current + 5)
+  },
+  PageDown: () => {
     emits('next')
+  },
+  PageUp: () => {
+    emits('last')
   }
 }
 const keyBoardEvent = (e) => {
