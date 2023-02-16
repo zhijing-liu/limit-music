@@ -134,6 +134,9 @@ ipcMain.handle('maxWindow', () => {
 ipcMain.handle('minWindow', () => {
   mainWindow.minimize()
 })
+ipcMain.handle('fullScreen', () => {
+  mainWindow.setFullScreen(!mainWindow.isFullScreen())
+})
 
 ipcMain.handle('hideWindow', () => {
   // 最小化到托盘

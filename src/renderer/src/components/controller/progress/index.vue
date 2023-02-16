@@ -75,7 +75,7 @@ const mouseup = () => {
     display flex
     justify-content center
     pointer-events none
-    transition all 0.8s
+    transition all 0.4s
     .timeDisplay
       position relative
       display flex
@@ -95,7 +95,7 @@ const mouseup = () => {
       border-top-color #FFFFFF
   .enabled
     background-color rgb(240,150,170)
-    transition all 0.8s
+    transition all 0.2s
   *
     pointer-events none
 </style>

@@ -1,5 +1,5 @@
 <template lang="pug">
-#header()
+#header
   .logo
     img(:src="LOGOIcon")
   .title.pointing(@click="getComponentVisibleStore.curtainVisible = true") limit music

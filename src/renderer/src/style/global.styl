@@ -1,3 +1,6 @@
+@font-face
+  font-family:'pinyin'
+  src url("@/assets/font/pingying.ttf")
 :root
   --cursor-pointer url('@/assets/icon/pointer.svg') 10 10,auto
   --cursor-noPointer url('@/assets/icon/noPointer.svg') 10 10,auto
@@ -5,6 +8,7 @@
 *
   user-select none
   font-family "SF Pro Text","SF Pro Icons","Helvetica Neue","Helvetica","Arial",sans-serif
+  -webkit-app-region no-drag
   &::-webkit-scrollbar
     width 8px
     background-color transparent
@@ -16,6 +20,9 @@
     width 0
 .pointing
   cursor var(--cursor-pointing)
+.pinYin
+  font-family 'pinyin'
+  letter-spacing 2px
 body
   padding 0
   margin 0

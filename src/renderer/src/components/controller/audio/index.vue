@@ -47,8 +47,9 @@ const pause = () => {
 }
 const setDefault = () => {}
 const setCurrent = (current) => {
-  if (getControllerStore.isPlaying) {
+  if (musicData.value !== '') {
     audioIns.value.currentTime = current ?? 0
+    onCurrentUpdate()
   }
 }
 const loadData = async () => {

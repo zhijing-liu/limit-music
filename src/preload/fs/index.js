@@ -44,7 +44,6 @@ export const getMusicInfo = async (
     bitsPerSample: fileInfo.format.bitsPerSample, // bit
     path
   }
-  console.log(data)
   if (lyric) {
     const lyricList = []
     if (fileInfo.common.lyrics) {

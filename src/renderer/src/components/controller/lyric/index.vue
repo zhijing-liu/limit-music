@@ -1,9 +1,165 @@
 <template lang="pug">
 #lyricBoard
+  img.closeButton(:src="downImage" @click="emits('close')")
+  img.fullScreenButton(:src="fullScreenImage" @click="fullScreen")
+  .album
+    img.blurBak(:src="musicInfo.albumPic")
+    img.albumPic(:src="musicInfo.albumPic")
+  #lyrics.noScrollBar
+    .lyricBlock
+    .lyric.pointing(
+      v-for="({time,lyric},index) in musicInfo.lyricList"
+      :class="{light:index===step-1}"
+      :key="index"
+      :ref="(el)=>index===step-1&&(lyricIns=el)"
+      @wheel="wheel"
+    )
+      span.lyricValue.pinYin(@click.stop="()=>changeProgress(time)") {{ lyric }}
+  .back(:style="`background-image:url('${musicInfo.albumPic}')`")
 </template>
 
-<script setup></script>
+<script setup>
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { controllerStore } from '@/store'
+import downImage from '@/assets/img/down.png'
+import fullScreenImage from '@/assets/img/fullScreen.png'
+
+const props = defineProps(['musicInfo'])
+const emits = defineEmits(['setProgress', 'close'])
+const lyricIns = ref()
+const getControllerStore = controllerStore()
+const timeStep = computed(() => getControllerStore.current ?? 0)
+const step = ref(0)
+let lastStep = 0
+const allowLocating = ref(true)
+const find = () => {
+  if (
+    props.musicInfo.lyricList[step.value].time < timeStep.value * 1000 &&
+    props.musicInfo.lyricList.length - 1 > step.value
+  ) {
+    step.value++
+    find()
+  }
+  lastStep = timeStep.value
+}
+onMounted(() => {
+  find()
+})
+watch(timeStep, () => {
+  if (props.musicInfo.lyricList[step.value]) {
+    if (lastStep > timeStep.value) {
+      step.value = 0
+    }
+    find()
+  }
+})
+watchEffect(() => {
+  allowLocating.value &&
+    lyricIns.value?.scrollIntoView({
+      block: 'center'
+    })
+})
+const changeProgress = (time) => {
+  emits('setProgress', (time + 1) / 1000)
+  allowLocating.value = true
+  clearTimeout(wheelTimer)
+}
+let wheelTimer
+
+const wheel = () => {
+  allowLocating.value = false
+  clearTimeout(wheelTimer)
+  wheelTimer = setTimeout(() => {
+    allowLocating.value = true
+  }, 3000)
+}
+const fullScreen = () => {
+  window.underlying.fullScreen()
+}
+</script>
 
 <style scoped lang="stylus">
 #lyricBoard
+  position fixed
+  top 0
+  right 0
+  left 0
+  bottom 0
+  display flex
+  overflow auto
+  align-items center
+  justify-content center
+  z-index 100
+  background-color #FFFFFF
+  .fullScreenButton
+  .closeButton
+    position absolute
+    top 30px
+    width 30px
+    height 30px
+    padding 10px
+    border-radius 33%
+    transition all 0.3s
+    &:hover
+      background-color rgba(255,255,255,.09)
+  .fullScreenButton
+    right 30px
+  .closeButton
+    left 30px
+  .album
+    height 200px
+    width 200px
+    display flex
+    justify-content center
+    align-items center
+    position relative
+    margin-left 30px
+    margin-right 30px
+    .blurBak
+      filter blur(8px)
+      height 100%
+      width 100%
+      position absolute
+      border-radius 6px
+      overflow hidden
+      z-index -1
+    .albumPic
+      width 75%
+      height 75%
+      border-radius 4px
+      overflow hidden
+  #lyrics
+    display flex
+    flex-direction column
+    max-height 70vh
+    width 60vw
+    overflow auto
+    box-sizing border-box
+    border 30px solid transparent
+    scroll-behavior smooth
+    .lyric
+      height 45px
+      line-height 45px
+      font-size 3vh
+      color #222222
+      font-weight bold
+      text-align center
+      flex 0 0 45px
+      word-wrap anywhere
+      transition all 0.8s
+      .lyricValue
+        padding 5px 11px
+    .lyric.light
+      color #FFFFFF
+  .back
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 100%
+    filter blur(6px)
+    background-size cover
+    background-position center center
+    z-index -2
+    opacity 0.7
 </style>

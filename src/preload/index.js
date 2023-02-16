@@ -25,6 +25,9 @@ contextBridge.exposeInMainWorld('underlying', {
   openDirSelector: async () => {
     return (await ipcRenderer.invoke('openDirSelector')) ?? []
   },
+  fullScreen: () => {
+    return ipcRenderer.invoke('fullScreen')
+  },
   getDirAccessibility,
   scanMusicByPath,
   getPlayUrl,

@@ -7,14 +7,22 @@
   Transition(name="expansion")
     .action(v-if="action==='search'")
       .search.pointing
-        input.searchArea(:value="getControllerStore.searchValue" @change="search" @focus="displayInfo.hasBlur=true" @blur="displayInfo.hasBlur=false")
+        input.searchArea(
+          ref="activeIns"
+          :value="getControllerStore.searchValue"
+          @change="search"
+          @focus="displayInfo.hasBlur=true"
+          @blur="displayInfo.hasBlur=false"
+          )
+        img.clearButton(:src="clearImage" @click="getControllerStore.searchValue=''")
         .searchButton 搜索
 </template>
 
 <script setup>
 import arrowHeadImage from '@/assets/img/arrowHead.png'
 import searchImage from '@/assets/img/search.png'
-import { reactive, ref, watch } from 'vue'
+import clearImage from '@/assets/img/clear.png'
+import { nextTick, reactive, ref, watch } from 'vue'
 import { controllerStore } from '@/store'
 
 const getControllerStore = controllerStore()
@@ -36,6 +44,7 @@ const addEvent = () => {
   displayInfo.mouseenter = true
   sidebarIns.value.addEventListener('mouseenter', mouseenterEvent)
 }
+const activeIns = ref()
 const search = (e) => {
   getControllerStore.searchValue = e.target.value
 }
@@ -50,6 +59,11 @@ watch(displayInfo, () => {
       sidebarIns.value.removeEventListener('mouseenter', mouseenterEvent)
     }, 500)
   }
+})
+watch(action, () => {
+  nextTick(() => {
+    activeIns.value?.focus()
+  })
 })
 </script>
 
@@ -90,7 +104,7 @@ watch(displayInfo, () => {
       &:hover
         background-color rgba(235,122,119,.4)
   .action
-    width 200px
+    width 240px
     display flex
     //flex-direction column
     align-items center
@@ -115,6 +129,9 @@ watch(displayInfo, () => {
         background-color rgba(235,122,119,.4)
         font-size 12px
         padding 0 5px
+      .clearButton
+        width 30px
+        height 30px
 #sidebar.active
   transform translateY(-50%) translateX(0)
   right 0
@@ -132,6 +149,6 @@ watch(displayInfo, () => {
   width 0 !important
 .expansion-enter-to,
 .expansion-leave-from
-  width 200px !important
+  width 240px !important
 </style>
 <style lang="stylus"></style>

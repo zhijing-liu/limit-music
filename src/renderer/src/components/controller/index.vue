@@ -1,6 +1,6 @@
 <template lang="pug">
 #controller
-  .album
+  .album(@click="lyricVisible=true")
     img.blurBak(:src="musicInfo.albumPic??musicImage")
     img.albumPic(:src="musicInfo.albumPic??musicImage")
   .button(@click="playPause")
@@ -20,11 +20,19 @@
   .button(@click="setPlayMode")
     img.icon(:src="playModeMap[getControllerStore.playMode]")
 AudioComponent(ref="audioIns" @playEnd="next")
+Transition(name="floatUp")
+  Lyric(
+    :musicInfo="musicInfo"
+    v-if="lyricVisible"
+    @close="lyricVisible=false"
+    @setProgress="setProgress"
+    )
 </template>
 
 <script setup>
 import AudioComponent from './audio/index.vue'
 import Progress from './progress/index.vue'
+import Lyric from './lyric/index.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { controllerStore } from '@/store'
 import playImage from '@/assets/img/play.png'
@@ -66,33 +74,7 @@ const last = () => {
     getControllerStore.setPlayIndex(getControllerStore.getPlayIndex - 1)
   }
 }
-// const lyricInfo = reactive({
-//   step: null,
-//   nextTime: 0
-// })
-// const getLyricInfo = reactive({
-//   label: ''
-// })
-// const getLyric = (ms) => {
-//   if (musicInfo.value.lyricList && ms > lyricInfo.nextTime) {
-//     const start = Math.min(lyricInfo.step ?? 0, musicInfo.value.lyricList.length)
-//     const list = musicInfo.value.lyricList.slice(start)
-//     for (const index in list) {
-//       const item = list[index]
-//       if (ms <= item.time) {
-//         lyricInfo.step = Math.max(0, +index + start - 1)
-//         lyricInfo.nextTime = list[lyricInfo.step + 1]?.time
-//         break
-//       }
-//     }
-//   }
-// }
-// const currentChanged = (current) => {
-//   // getLyric(current * 1000)
-// }
-// const playEnd = () => {
-//   next()
-// }
+const lyricVisible = ref(false)
 onMounted(() => {
   getControllerStore.audioPlayerInstance = audioIns.value
 })
@@ -146,19 +128,23 @@ const centerMouseEnter = (e) => {
     align-items center
     position relative
     margin-right 20px
+    transition all 0.3s
     .blurBak
       filter blur(8px)
-      height 60px
-      width 60px
+      height 100%
+      width 100%
       position absolute
       border-radius 6px
       overflow hidden
       z-index -1
     .albumPic
-      width 45px
-      height 45px
+      width 75%
+      height 75%
       border-radius 4px
       overflow hidden
+    &:hover
+      height 70px
+      width 70px
   .center
     width 50vw
     height 100%
