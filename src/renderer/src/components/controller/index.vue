@@ -1,6 +1,6 @@
 <template lang="pug">
 #controller
-  .album(@click="lyricVisible=true")
+  .album(@click="playingUrl&&(lyricVisible=true)")
     img.blurBak(:src="musicInfo.albumPic??musicImage")
     img.albumPic(:src="musicInfo.albumPic??musicImage")
   .button(@click="()=>playPause()")
@@ -90,11 +90,15 @@ watch(
   async () => {
     if (playingUrl.value) {
       localStorage.setItem('playingUrl', playingUrl.value)
-      const data = await window.underlying.getMusicInfo(playingUrl.value, {
-        lyric: true,
-        albumPic: true
-      })
-      if (data.path === playingUrl.value) {
+      const data = await window.underlying
+        .getMusicInfo(playingUrl.value, {
+          lyric: true,
+          albumPic: true
+        })
+        .catch((r) => {
+          getControllerStore.playingUrl = ''
+        })
+      if (data?.path === playingUrl.value) {
         musicInfo.value = data
       }
     }

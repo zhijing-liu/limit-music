@@ -24,6 +24,7 @@
 import scanIcon from '@/assets/icon/scan.svg'
 import listIcon from '@/assets/icon/list.svg'
 import settingImage from '@/assets/img/setting.png'
+import dirImage from '@/assets/img/dir.png'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, reactive } from 'vue'
 const items = reactive([
@@ -31,6 +32,11 @@ const items = reactive([
     label: '歌曲',
     routeName: 'main',
     icon: listIcon
+  },
+  {
+    label: '文件夹',
+    routeName: 'dir',
+    icon: dirImage
   },
   {
     label: '扫描',

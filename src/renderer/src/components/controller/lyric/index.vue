@@ -11,7 +11,7 @@
       :class="{light:index===step-1}"
       :key="index"
       :ref="(el)=>index===step-1&&(lyricIns=el)"
-      @wheel="wheel"
+      @wheel.passive="wheel"
       @click.stop="()=>changeProgress((time + 1) / 1000)"
     ) {{ lyric }}
   .back(:style="`background-image:url('${musicInfo.albumPic}')`")
@@ -96,8 +96,8 @@ const keyBoardMap = {
   }
 }
 const keyBoardEvent = (e) => {
-  console.log(e.code)
   keyBoardMap[e.code]?.(e)
+  e.preventDefault()
 }
 watch(
   computed(() => props.visible),

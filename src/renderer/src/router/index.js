@@ -21,6 +21,11 @@ export default createRouter({
       path: '/setting',
       name: 'setting',
       component: () => import('@/components/routeViews/setting/index.vue')
+    },
+    {
+      path: '/dir',
+      name: 'dir',
+      component: () => import('@/components/routeViews/dir/index.vue')
     }
   ]
 })
