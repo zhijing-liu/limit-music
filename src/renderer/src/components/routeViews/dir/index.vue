@@ -1,36 +1,35 @@
 <template lang="pug">
 #dir
   .group(v-for="(data,dirPath) in getDirMap")
-    .groupName.pointing(@click="foldDir[dirPath]=!foldDir[dirPath]")
+    .groupName.pointing(@click="foldDir=(foldDir===dirPath?'':dirPath)")
       img.icon(:src="dirIcon")
       .label
         .path {{dirPath}}
+        .length {{data.length}} 首
       .space
-      img.removeButton(:src="removeImage" @click="()=>removeDir(dirPath)")
-    .items(v-show="!data.fold")
-      .item(v-for="item in data.list" :key="item.path")
+      img.removeButton(:src="removeImage" @click.stop="()=>removeDir(dirPath)")
+    .items.noScrollBar(v-show="foldDir===dirPath")
+      .item(v-for="item in data" :key="item.path")
         .name {{item.fileName}}
+        img.removeButton(:src="removeImage" @click.stop="()=>removeMusic(item.path)")
 </template>
 
 <script setup>
 import { controllerStore, musicInfoDb } from '@/store'
-import { computed, reactive, toRaw, watch } from 'vue'
+import { computed, reactive, ref, toRaw, watch } from 'vue'
 import dirIcon from '@/assets/icon/dir.svg'
 import removeImage from '@/assets/img/remove.png'
 
 const getControllerStore = controllerStore()
-const foldDir = reactive({})
+const foldDir = ref('')
 const getDirMap = computed(() => {
   const map = {}
   for (const path in getControllerStore.musicMap) {
     const data = getControllerStore.musicMap[path]
     if (!map[data.dirPath]) {
-      map[data.dirPath] = {
-        list: [],
-        fold: foldDir[data.dirPath]
-      }
+      map[data.dirPath] = []
     }
-    map[data.dirPath].list.push(data)
+    map[data.dirPath].push(data)
   }
   return map
 })
@@ -38,13 +37,18 @@ const removeDir = async (dirPath) => {
   await musicInfoDb.musicItem.where('dirPath').equals(dirPath).delete()
   await getControllerStore.refreshMusicMap()
 }
+const removeMusic = async (path) => {
+  await musicInfoDb.musicItem.where('path').equals(path).delete()
+  await getControllerStore.refreshMusicMap()
+}
 </script>
 
 <style scoped lang="stylus">
 #dir
-  font-size 14px
+  justify-content center
   .group
     display flex
+    flex 0
     flex-direction column
     .groupName
       display flex
@@ -66,8 +70,9 @@ const removeDir = async (dirPath) => {
         &:hover
           background-color rgba(181,202,160,.2)
     .items
-      max-height 60vh
       overflow auto
+      flex 1 0 0
+      min-height 40vh
       .item
         height 40px
         display flex
@@ -87,4 +92,10 @@ const removeDir = async (dirPath) => {
           text-overflow ellipsis
         &:hover
           background-color rgba(165,222,228,0.4)
+        .removeButton
+          width 30px
+          height 30px
+          padding 5px
+          &:hover
+            background-color rgba(165,222,228,0.2)
 </style>
