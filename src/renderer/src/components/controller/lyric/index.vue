@@ -2,6 +2,7 @@
 #lyricBoard
   img.closeButton(:src="downImage" @click="emits('update:visible',false)")
   img.fullScreenButton(:src="fullScreenImage" @click="fullScreen")
+  img.arrowHeadRightButton(:src="arrowHeadRightImage" @click="hide()")
   .album
     img.blurBak(:src="musicInfo.albumPic")
     .albumPic(:style="`background-image: url('${musicInfo.albumPic}')`")
@@ -22,7 +23,8 @@ import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { controllerStore } from '@/store'
 import downImage from '@/assets/img/down.png'
 import fullScreenImage from '@/assets/img/fullScreen.png'
-
+import arrowHeadRightImage from '@/assets/img/arrowHeadRight.png'
+import { windowHandler } from '@/methods'
 const props = defineProps(['musicInfo', 'visible'])
 const emits = defineEmits(['setProgress', 'update:visible', 'play', 'pause', 'last', 'next'])
 const lyricIns = ref()
@@ -75,6 +77,9 @@ const wheel = () => {
 const fullScreen = () => {
   window.underlying.fullScreen()
 }
+const hide = () => {
+  windowHandler.hide()
+}
 const keyBoardMap = {
   Esc: () => {
     emits('update:visible', false)
@@ -93,9 +98,13 @@ const keyBoardMap = {
   },
   PageUp: () => {
     emits('last')
+  },
+  Delete: () => {
+    hide()
   }
 }
 const keyBoardEvent = (e) => {
+  console.log(e)
   keyBoardMap[e.code]?.(e)
   e.preventDefault()
 }
@@ -123,10 +132,10 @@ watch(
   justify-content center
   z-index 100
   background-color #FFFFFF
+  .arrowHeadRightButton
   .fullScreenButton
   .closeButton
     position absolute
-    top 30px
     width 30px
     height 30px
     padding 10px
@@ -135,8 +144,13 @@ watch(
     &:hover
       background-color rgba(255,255,255,.09)
   .fullScreenButton
+    top 30px
     right 30px
+  .arrowHeadRightButton
+    right 30px
+    bottom 30px
   .closeButton
+    top 30px
     left 30px
   .album
     height 200px
