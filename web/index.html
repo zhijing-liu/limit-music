@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/x-icon" href="limitMusic/source/img/logo.png">
+  <meta charset="UTF-8">
+  <title>limit 让音乐更简单</title>
+  <link rel="stylesheet" href="limitMusic/source/css/index.css">
+</head>
+<body>
+<img src="limitMusic/source/img/bg.jpg" alt="" id="bg">
+<script>
+  const bg=document.querySelector('#bg')
+  document.body.addEventListener('mousemove',(e)=>{
+    const rect=document.body.getBoundingClientRect()
+    bg.style.transform=`translate(${(e.x-rect.width/2)/rect.width*10}vw,${(e.y-rect.height/2)/rect.height*10}vh)`
+  })
+</script>
+<h1 id="title">limit-music</h1>
+<h3 id="subtitle">让音乐更简单</h3>
+<a href="https://wwcp.lanzout.com/i5Kt40nv25na" target="_blank"><div id="downloadButton">download</div></a>
+<a href="https://github.com/zhijing-liu/limit-music" target="_blank"><img id="github" src="limitMusic/source/img/github.png" alt=""/></a>
+</body>
+</html>

@@ -6,7 +6,7 @@
   .album
     img.blurBak(:src="musicInfo.albumPic")
     .albumPic(:style="`background-image: url('${musicInfo.albumPic}')`")
-  #lyrics.noScrollBar
+  #lyrics.noScrollBar(:key="getControllerStore.playingUrl")
     .lyric.pointing.pinYin(
       v-for="({time,lyric},index) in musicInfo.lyricList"
       :class="{light:index===step-1}"
@@ -104,7 +104,6 @@ const keyBoardMap = {
   }
 }
 const keyBoardEvent = (e) => {
-  console.log(e)
   keyBoardMap[e.code]?.(e)
   e.preventDefault()
 }
@@ -190,7 +189,7 @@ watch(
       font-weight bold
       word-wrap anywhere
       transition all 0.8s
-      min-height 5.4vh
+      text-align center
       line-height 5.4vh
       font-size 3vh
     .lyric.light

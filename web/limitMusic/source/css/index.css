@@ -1,0 +1,79 @@
+@-webkit-keyframes bounce{/*创建动画*/
+  0%,100%,20%,50%,80%{
+    transform:translateY(0);
+  }
+  40%{
+    transform:translateY(-30px);
+  }
+  60%{
+    transform:translateY(-15px);
+  }
+}
+
+a{
+  text-decoration: none;
+}
+*{
+  cursor: url("../img/music.png") 8 8,auto !important;
+}
+body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#bg {
+  position: fixed;
+  top: -10vh;
+  left: -10vw;
+  width: 120vw;
+  height: 120vh;
+  object-fit: cover;
+  z-index: -1;
+  transform: translate(0, 0);
+}
+
+#title {
+  font-size: 9vh;
+  margin-bottom: 10vh;
+  text-transform: uppercase;
+}
+#subtitle{
+  font-size: 4vh;
+  margin-bottom: 10vh;
+  color: #666666;
+}
+#downloadButton {
+  padding: 1.5vh 1.5vw;
+  font-size: 2vh;
+  cursor: pointer;
+  border-radius: 2vh;
+  transition: background-color 0.3s;
+  text-transform: uppercase;
+  animation :bounce 1.5s infinite;
+  color :#000;
+}
+#downloadButton:hover {
+  background-color: rgba(255, 255, 255, .3);
+  animation:none;
+}
+
+#github {
+  position: fixed;
+  right: 1vw;
+  top: 1vh;
+  height: 5vh;
+  padding: 1.5vh;
+  border-radius: 2vh;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+#github:hover {
+  background-color: rgba(255, 255, 255, .1);
+}
