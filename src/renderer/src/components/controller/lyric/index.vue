@@ -3,9 +3,12 @@
   img.closeButton(:src="downImage" @click="emits('update:visible',false)")
   img.fullScreenButton(:src="fullScreenImage" @click="fullScreen")
   img.arrowHeadRightButton(:src="arrowHeadRightImage" @click="hide()")
-  .album
-    img.blurBak(:src="musicInfo.albumPic")
-    .albumPic(:style="`background-image: url('${musicInfo.albumPic}')`")
+  .musicInfo
+    .title {{musicInfo.title}}
+    .artists {{musicInfo.artists?.join(' ')}}
+    .album
+      img.blurBak(:src="musicInfo.albumPic")
+      .albumPic(:style="`background-image: url('${musicInfo.albumPic}')`")
   #lyrics.noScrollBar(:key="getControllerStore.playingUrl")
     .lyric.pointing.pinYin(
       v-for="({time,lyric},index) in musicInfo.lyricList"
@@ -151,29 +154,41 @@ watch(
   .closeButton
     top 30px
     left 30px
-  .album
-    height 200px
-    width 200px
+  .musicInfo
     display flex
-    justify-content center
+    flex-direction column
     align-items center
-    position relative
-    margin-left 30px
-    margin-right 30px
-    .blurBak
-      filter blur(8px)
-      height 100%
-      width 100%
-      position absolute
-      border-radius 6px
-      overflow hidden
-      z-index -1
-    .albumPic
-      width 75%
-      height 75%
-      border-radius 10%
-      overflow hidden
-      background-size contain
+    .title
+      font-size 3vh
+      padding 1vh 0
+      font-weight bolder
+    .artists
+      font-size 2vh
+      padding 1vh 0
+      font-weight bolder
+    .album
+      height 200px
+      width 200px
+      display flex
+      justify-content center
+      align-items center
+      position relative
+      margin-left 30px
+      margin-right 30px
+      .blurBak
+        filter blur(8px)
+        height 100%
+        width 100%
+        position absolute
+        border-radius 6px
+        overflow hidden
+        z-index -1
+      .albumPic
+        width 75%
+        height 75%
+        border-radius 10%
+        overflow hidden
+        background-size contain
   #lyrics
     display flex
     flex-direction column
@@ -184,6 +199,8 @@ watch(
     border 30px solid transparent
     scroll-behavior smooth
     align-items center
+    position relative
+    border-radius 5vh
     .lyric
       color #222222
       font-weight bold
