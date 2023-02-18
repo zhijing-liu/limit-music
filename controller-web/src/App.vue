@@ -9,7 +9,7 @@
     img.button(:src="nextImage" @click="next")
     img.button(:src="playModeMap[musicData?.playMode??'default']" @click="setPlayMode")
 Transition(name="fullDown-quick")
-  #curtain(v-if="!connecting")
+  #curtain(v-show="!connecting")
     img.icon(:src="iconImage")
     .title {{connectError?'连接错误，试着重新连接吧':'在连了，等一下嘛...'}}
     .button(v-if="connectError" @click="connect") 重新连接
