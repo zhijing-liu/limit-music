@@ -37,3 +37,10 @@ $ pnpm build:linux
 # 调试前执行
 $ pnpm build-web
 ```
+
+### 控制器页面开发
+
+
+```bash
+$ pnpm dev-web
+```
