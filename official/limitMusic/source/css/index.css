@@ -58,9 +58,10 @@ body {
   text-transform: uppercase;
   animation :bounce 1.5s infinite;
   color :#000;
+  background-color: rgba(255, 255, 255, .2);
 }
 #downloadButton:hover {
-  background-color: rgba(255, 255, 255, .3);
+  background-color: rgba(255, 255, 255, .5);
   animation:none;
 }
 

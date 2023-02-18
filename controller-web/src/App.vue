@@ -63,7 +63,6 @@ const getAllData = async () => {
   } = await axios.post('/action', {
     action: 'getMusicData'
   })
-  console.log(result)
   musicData.value = result
 }
 const playSocketIns = ref()
