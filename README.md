@@ -28,3 +28,10 @@ $ pnpm build:mac
 # For Linux
 $ pnpm build:linux
 ```
+
+### 外置控制器调试
+
+```bash
+# 调试前执行
+$ pnpm build-web
+```
