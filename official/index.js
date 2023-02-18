@@ -19,5 +19,5 @@ app.get('/limitMusic/:path(*)', (req, res) => {
   res.sendFile(join(path, './limitMusic', req.params.path))
 })
 app.listen(80, '0.0.0.0', () => {
-  console.log('serve start')
+  console.info('serve start')
 })

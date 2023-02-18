@@ -3,6 +3,7 @@
   .title {{musicData?.musicInfo?.title}}
   img.album(:src="musicData?.musicInfo?.albumPic??musicImage")
   .buttons
+    img.button(:src="listImage" @click="musicListIns.setVisible")
     img.button(:src="lastImage" @click="last")
     img.button(v-if="musicData?.isPlaying" :src="pauseImage" @click="pause")
     img.button(:src="playImage" @click="play" v-else)
@@ -13,12 +14,14 @@ Transition(name="fullDown-quick")
     img.icon(:src="iconImage")
     .title {{connectError?'连接错误，试着重新连接吧':'在连了，等一下嘛...'}}
     .button(v-if="connectError" @click="connect") 重新连接
+MusicList(:connecting="connecting" :playingUrl="musicData?.musicInfo?.path" ref="musicListIns")
 </template>
 <script setup>
 import axios from 'axios'
 import { Manager } from 'socket.io-client'
 import { reactive, ref, watch } from 'vue'
 import playImage from '@/assets/img/play.png'
+import listImage from '@/assets/img/list.png'
 import pauseImage from '@/assets/img/pause.png'
 import lastImage from '@/assets/img/last.png'
 import nextImage from '@/assets/img/next.png'
@@ -26,12 +29,14 @@ import musicImage from '@/assets/img/music.png'
 import defaultImage from '@/assets/img/default.png'
 import randomImage from '@/assets/img/random.png'
 import iconImage from '@/assets/img/icon.png'
+import MusicList from '@/component/musicList.vue'
 
 const playModeMap = reactive({
   default: defaultImage,
   random: randomImage
 })
 const musicData = ref({})
+const musicListIns = ref({})
 const play = () => {
   axios.post('/action', {
     action: 'play'
@@ -83,9 +88,6 @@ const createSocket = () => {
     .on('disconnect', () => {
       connecting.value = false
     })
-    // .on('connect_error', () => {
-    //   console.log(456456456456)
-    // })
     .on('musicInfo', (data) => {
       musicData.value.musicInfo = data
     })
@@ -105,10 +107,7 @@ const connecting = ref(false)
 createSocket()
 watch(connecting, () => {
   if (connecting.value) {
-    console.log('connect')
     getAllData()
-  } else {
-    console.log('disconnect')
   }
 })
 </script>
@@ -132,6 +131,7 @@ watch(connecting, () => {
   align-items center
   overflow hidden
   flex-direction column
+  background-color #FFFFFF
   .title
     font-size 3.2vh
     margin-bottom 5vh

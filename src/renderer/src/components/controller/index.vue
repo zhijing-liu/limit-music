@@ -151,7 +151,11 @@ watch(
               isPlaying: getControllerStore.isPlaying,
               playMode: getControllerStore.playMode
             }),
-            setPlayMode
+            setPlayMode,
+            setPlayingUrl: (value) => {
+              getControllerStore.playingUrl = value
+            },
+            getMusicMap: () => toRaw(getControllerStore.musicMap)
           },
           {
             port: data.port,

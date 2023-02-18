@@ -12,7 +12,10 @@ export default defineConfig({
     host: true,
     proxy: {
       '/action': 'http://127.0.0.1:10000/',
-      '/socket.io': 'http://127.0.0.1:10000/'
+      '/socket.io': {
+        target: 'http://127.0.0.1:10000/',
+        ws: true
+      }
     }
   },
   base: '/controller/',

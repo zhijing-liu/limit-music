@@ -108,8 +108,8 @@ class ControllerServer {
       }
     })
     this.app.post('/action', async (req, res) => {
-      const { action } = req.body
-      const result = await controller[action]?.()
+      const { action, args } = req.body
+      const result = await controller[action]?.(...(args ?? []))
       res.send({
         implement: true,
         result

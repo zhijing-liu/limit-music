@@ -89,17 +89,6 @@ export const controllerStore = defineStore('controller', {
     getMusicMapLength(state) {
       return Object.keys(state.musicMap).length
     }
-    // getDirMap(state) {
-    //   const map = new Map()
-    //   for (const path in state.musicMap) {
-    //     if (!map.has(state.musicMap[path].dirPath)) {
-    //       map.set(state.musicMap[path].dirPath, new Map([['list', []]]))
-    //     }
-    //     map.get(state.musicMap[path].dirPath).get('list').push(state.musicMap[path])
-    //   }
-    //   console.log(map)
-    //   return map
-    // }
   },
   actions: {
     setPlayIndex(index) {
@@ -112,12 +101,6 @@ export const controllerStore = defineStore('controller', {
     async refreshMusicMap() {
       this.musicMap = await getDbMusicMap()
     }
-    // async removeMusicMap(key, dirPath) {
-    //   console.log(key)
-    //   console.log(await musicInfoDb.musicItem.filter((data) => data[key] === dirPath).toArray())
-    //   // console.log(await musicInfoDb.musicItem.where(key).startsWithAnyOfIgnoreCase(list).toArray())
-    //   // await this.refreshMusicMap()
-    // }
   }
 })
 export const componentVisibleStore = defineStore('componentVisible', {
