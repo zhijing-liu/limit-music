@@ -32,16 +32,6 @@ const close = () => {
 const afterLeave = () => {
   getComponentVisibleStore.webControllerVisible = false
 }
-// watch(imageUrl, async () => {
-//   imageSrc.value = imageUrl.value
-//     ? await QRCode.toDataURL(imageUrl.value, {
-//         color: {
-//           light: '#81c7d400',
-//           dark: '#8F5A3CDD'
-//         }
-//       })
-//     : ''
-// })
 onMounted(async () => {
   imageSrc.value = imageUrl.value
     ? await QRCode.toDataURL(imageUrl.value, {

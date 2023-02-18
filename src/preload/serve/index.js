@@ -120,7 +120,8 @@ class ControllerServer {
       createProxyMiddleware({
         target: `http://127.0.0.1:${socketPort}`, // 目标主机
         changeOrigin: true, // 需要虚拟主机站点
-        ws: true // 是否代理websocket
+        ws: true, // 是否代理websocket
+        proxyTimeout: 5000
       })
     )
     createSocket(this.app, socketPort).then((socketServer) => {

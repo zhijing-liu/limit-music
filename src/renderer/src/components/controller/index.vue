@@ -115,6 +115,12 @@ watch(
     getControllerStore.controllerServer?.updateSocket?.('isPlaying', getControllerStore.isPlaying)
   }
 )
+watch(
+  computed(() => getControllerStore.playMode),
+  () => {
+    getControllerStore.controllerServer?.updateSocket?.('playMode', getControllerStore.playMode)
+  }
+)
 const centerActive = ref(false)
 const centerMouseEnter = (e) => {
   centerActive.value = true
@@ -142,8 +148,10 @@ watch(
             last,
             getMusicData: () => ({
               musicInfo: toRaw(musicInfo.value),
-              isPlaying: getControllerStore.isPlaying
-            })
+              isPlaying: getControllerStore.isPlaying,
+              playMode: getControllerStore.playMode
+            }),
+            setPlayMode
           },
           {
             port: data.port,

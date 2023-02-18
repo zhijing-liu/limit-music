@@ -1,9 +1,9 @@
 import { Server } from 'socket.io'
 import { createServer } from 'node:http'
 
-const socketConnections = {
-  player: {}
-}
+// const socketConnections = {
+//   player: {}
+// }
 const socketServer = {}
 // const setSocketConnections = (nameSpace, action, data, socket) => {
 //   if (nameSpace === 'playerNsp') {
@@ -21,27 +21,29 @@ export const update = (key, value) => {
 }
 export const createSocket = async (app, socketPort = 20000) => {
   const server = createServer(app)
-  socketServer.main = new Server(server)
-  addSocketEvent()
+  socketServer.main = new Server(server, {
+    connectTimeout: 5000
+  })
+  socketServer.playerNsp = socketServer.main.of('/socket-player')
   return new Promise((resolve) => {
     server.listen(socketPort, '::', () => {
       resolve(server)
     })
   })
 }
-const addSocketEvent = () => {
-  socketServer.playerNsp = socketServer.main.of('/socket-player')
-  // socketServer.controllerNsp = socketServer.main.of('/socket-controller')
-  socketServer.playerNsp.on('connection', (socket) => {})
-  socketServer.main.on('connection', (socket) => {
-    console.log(78978978978)
-  })
-  //
-  // socketServer.controllerNsp.on('connection', (socket) => {
-  //   console.log(socket.id, 'controllerNsp')
-  //   socket.emit('deviceList', socketConnections.player)
-  //   socket.on('deviceList', () => {
-  //     socket.emit('deviceList', socketConnections.player)
-  //   })
-  // })
-}
+// const addSocketEvent = () => {
+//   socketServer.playerNsp = socketServer.main.of('/socket-player')
+//   // socketServer.controllerNsp = socketServer.main.of('/socket-controller')
+//   socketServer.playerNsp.on('connection', (socket) => {})
+//   socketServer.main.on('connection', (socket) => {
+//     console.log(78978978978)
+//   })
+//   //
+//   // socketServer.controllerNsp.on('connection', (socket) => {
+//   //   console.log(socket.id, 'controllerNsp')
+//   //   socket.emit('deviceList', socketConnections.player)
+//   //   socket.on('deviceList', () => {
+//   //     socket.emit('deviceList', socketConnections.player)
+//   //   })
+//   // })
+// }
