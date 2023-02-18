@@ -131,6 +131,40 @@ const settingGroups = reactive({
         mode: 'number',
         min: 1,
         max: 65534
+      },
+      {
+        label: '开启网络控制服务',
+        index: 'webServe-3',
+        value: computed({
+          get: () => getSettingStore.webControllerEnable,
+          set: (v) => (getSettingStore.webControllerEnable = v)
+        }),
+        type: 'switch',
+        warning: '开启后点击左上角logo即可扫码控制'
+      },
+      {
+        label: '网络控制服务端口',
+        index: 'webServe-4',
+        value: computed({
+          get: () => getSettingStore.webControllerPort,
+          set: (v) => (getSettingStore.webControllerPort = isNaN(+v) ? 10000 : +v)
+        }),
+        type: 'input',
+        mode: 'number',
+        min: 1,
+        max: 65534
+      },
+      {
+        label: '网络控制服务端口',
+        index: 'webServe-5',
+        value: computed({
+          get: () => getSettingStore.webControllerSocketPort,
+          set: (v) => (getSettingStore.webControllerSocketPort = isNaN(+v) ? 20000 : +v)
+        }),
+        type: 'input',
+        mode: 'number',
+        min: 1,
+        max: 65534
       }
     ]
   }

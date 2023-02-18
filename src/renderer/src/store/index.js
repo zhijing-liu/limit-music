@@ -61,6 +61,7 @@ export const controllerStore = defineStore('controller', {
     isPlaying: false,
     playMode: localStorage.getItem('playMode') ?? 'default', // 'default' 'random',
     audioPlayerInstance: null,
+    controllerServer: null,
     searchValue: '',
     musicInfoDb
   }),
@@ -121,7 +122,8 @@ export const controllerStore = defineStore('controller', {
 })
 export const componentVisibleStore = defineStore('componentVisible', {
   state: () => ({
-    curtainVisible: true
+    curtainVisible: true,
+    webControllerVisible: false
   })
 })
 const settings = {
@@ -132,6 +134,9 @@ const settings = {
   webServePort: 4000,
   progressBarAllowSlide: false,
   currentRefreshInterval: 80,
+  webControllerEnable: true,
+  webControllerPort: 10000,
+  webControllerSocketPort: 20000,
   ...JSON.parse(localStorage.getItem('setting') ?? '{}')
 }
 export const settingStore = defineStore('setting', {

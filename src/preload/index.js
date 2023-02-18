@@ -7,7 +7,8 @@ import {
   getPlayUrl,
   scanMusicByPath
 } from './fs'
-import { getFileKey, getIp, setServerStart, setServerClose } from './serve'
+import * as serve from './serve'
+
 contextBridge.exposeInMainWorld('electron', electronAPI)
 contextBridge.exposeInMainWorld('underlying', {
   closeWindow: () => {
@@ -35,8 +36,5 @@ contextBridge.exposeInMainWorld('underlying', {
   confirmFileAccess
 })
 contextBridge.exposeInMainWorld('serve', {
-  getFileKey,
-  getIp,
-  setServerStart,
-  setServerClose
+  ...serve
 })

@@ -1,6 +1,6 @@
 <template lang="pug">
 #header
-  .logo
+  .logo(@click="clickLogo")
     img(:src="LOGOIcon")
   .title.pointing(@click="getComponentVisibleStore.curtainVisible = true") limit music
   .rightButtons
@@ -26,6 +26,11 @@ const out = () => {
     windowHandler.hide()
   } else {
     windowHandler.powerOff()
+  }
+}
+const clickLogo = () => {
+  if (getSettingStore.webControllerEnable) {
+    getComponentVisibleStore.webControllerVisible = true
   }
 }
 </script>

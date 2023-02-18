@@ -7,7 +7,7 @@ Transition(name="fullDown")
 </template>
 
 <script setup>
-import { computed, onBeforeMount, onMounted, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, toRaw, watch } from 'vue'
 import { controllerStore, componentVisibleStore, settingStore } from '@/store'
 import logoImage from '@/assets/logo.png'
 import { useRouter } from 'vue-router'
@@ -36,11 +36,11 @@ watch(
   })),
   (data) => {
     if (data.enable) {
-      window.serve.setServerStart({ port: data.port }).catch(() => {
+      window.serve.setShareServerStart({ port: data.port }).catch(() => {
         getSettingStore.webServeEnable = false
       })
     } else {
-      window.serve.setServerClose({ port: data.port })
+      window.serve.setShareServerClose({ port: data.port })
     }
   },
   {

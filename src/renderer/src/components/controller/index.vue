@@ -38,8 +38,8 @@ Transition(name="floatUp")
 import AudioComponent from './audio/index.vue'
 import Progress from './progress/index.vue'
 import Lyric from './lyric/index.vue'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { controllerStore } from '@/store'
+import { computed, onMounted, reactive, ref, toRaw, watch, shallowRef, unref } from 'vue'
+import { controllerStore, settingStore } from '@/store'
 import playImage from '@/assets/img/play.png'
 import pauseImage from '@/assets/img/pause.png'
 import lastImage from '@/assets/img/last.png'
@@ -60,6 +60,7 @@ const setPlayMode = () => {
   localStorage.setItem('playMode', getControllerStore.playMode)
 }
 const getControllerStore = controllerStore()
+const getSettingStore = settingStore()
 const audioIns = ref()
 
 const playPause = (actionName = getControllerStore.isPlaying ? 'pause' : 'play') => {
@@ -101,10 +102,17 @@ watch(
       if (data?.path === playingUrl.value) {
         musicInfo.value = data
       }
+      getControllerStore.controllerServer?.updateSocket?.('musicInfo', toRaw(musicInfo.value))
     }
   },
   {
     immediate: true
+  }
+)
+watch(
+  computed(() => getControllerStore.isPlaying),
+  () => {
+    getControllerStore.controllerServer?.updateSocket?.('isPlaying', getControllerStore.isPlaying)
   }
 )
 const centerActive = ref(false)
@@ -116,6 +124,48 @@ const centerMouseEnter = (e) => {
   }
   e.target.addEventListener('mouseleave', leave)
 }
+watch(
+  computed(() => ({
+    audio: audioIns.value,
+    enable: getSettingStore.webControllerEnable,
+    port: getSettingStore.webControllerPort,
+    socketPort: getSettingStore.webControllerSocketPort
+  })),
+  (data) => {
+    if (data.enable && audioIns.value !== undefined) {
+      window.serve
+        .createControllerServer(
+          {
+            pause: audioIns.value.pause,
+            play: audioIns.value.play,
+            next,
+            last,
+            getMusicData: () => ({
+              musicInfo: toRaw(musicInfo.value),
+              isPlaying: getControllerStore.isPlaying
+            })
+          },
+          {
+            port: data.port,
+            socketPort: data.socketPort
+          }
+        )
+        .then((r) => {
+          getControllerStore.controllerServer = r
+        })
+        .catch(() => {
+          getSettingStore.webControllerEnable = false
+          getControllerStore.controllerServer = null
+        })
+    } else {
+      getControllerStore.controllerServer?.stop()
+      getControllerStore.controllerServer = null
+    }
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
 <style scoped lang="stylus">
