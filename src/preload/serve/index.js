@@ -23,10 +23,12 @@ const portIsNotUse = async (port) => {
       .listen(port, '::')
   })
 }
+
 class ShareServe {
   app
   running = false
   serve
+
   constructor() {
     this.app = express()
     this.app.get('/getMusic/:key/:name', (req, res) => {
@@ -63,6 +65,7 @@ class ShareServe {
     this.running = false
   }
 }
+
 const shareServeIns = new ShareServe()
 const createKeyPath = (path) => {
   const key = Math.ceil(Math.random() * 1000000000).toString()
@@ -84,16 +87,18 @@ export const getIp = () => {
   return ip.address()
 }
 // 远程控制
-let controllerServerIns
 class ControllerServer {
   app
   controller
   server
   socketServer
-  constructor(controller, { port, socketPort }) {
-    this.controller = controller
+  handler
+  constructor() {
     this.app = express()
     this.app.use(bodyParser.json())
+    this.app.use('/socket.io', (...arg) => {
+      this.handler?.(...arg)
+    })
     this.app.get('/controller/?*', (req, res) => {
       const url = join(__dirname, '../../public/static', req.params[0])
       if (statSync(url).isFile()) {
@@ -109,26 +114,39 @@ class ControllerServer {
     })
     this.app.post('/action', async (req, res) => {
       const { action, args } = req.body
-      const result = await controller[action]?.(...(args ?? []))
+      const result = await this.controller[action]?.(...(args ?? []))
       res.send({
         implement: true,
         result
       })
     })
-    this.app.use(
-      '/socket.io',
-      createProxyMiddleware({
-        target: `http://127.0.0.1:${socketPort}`, // 目标主机
-        changeOrigin: true, // 需要虚拟主机站点
-        ws: true, // 是否代理websocket
-        proxyTimeout: 5000
-      })
-    )
-    createSocket(this.app, socketPort).then((socketServer) => {
-      this.socketServer = socketServer
-    })
+  }
 
-    this.server = this.app.listen(port, '::')
+  setController(controller) {
+    this.controller = controller
+    return this
+  }
+
+  async start({ port, socketPort }) {
+    this.app.enabled('/socket.io')
+
+    this.handler = createProxyMiddleware({
+      target: `http://127.0.0.1:${socketPort}`, // 目标主机
+      changeOrigin: true, // 需要虚拟主机站点
+      ws: true, // 是否代理websocket
+      proxyTimeout: 5000
+    })
+    await Promise.all([
+      createSocket(socketPort).then((socketServer) => {
+        this.socketServer = socketServer
+      }),
+      new Promise((resolve) => {
+        this.server = this.app.listen(port, '::', () => {
+          resolve()
+        })
+      })
+    ])
+    return this
   }
 
   close() {
@@ -137,29 +155,33 @@ class ControllerServer {
   }
 
   updateSocket(key, value) {
-    update(key, value)
+    this.socketServer?.playerNsp?.emit(key, value)
   }
 
-  stop() {
-    this.server?.close()
-    this.socketServer?.close()
+  async stop() {
+    this.handler = undefined
+    await this.server?.close()
+    await this.socketServer?.main?.close()
+    await this.socketServer?.server?.close()
   }
 }
+const controllerServerIns = new ControllerServer()
+export const createControllerServer = async (controller, { port, socketPort }) => {
+  await controllerServerIns?.stop()
+  await controllerServerIns.setController(controller)
 
-export const createControllerServer = (controller, { port, socketPort }) => {
-  controllerServerIns?.stop()
-  controllerServerIns = null
-  return Promise.all([portIsNotUse(port), portIsNotUse(socketPort)]).then(() => {
-    controllerServerIns = new ControllerServer(controller, { port, socketPort })
-    return {
-      controllerServerIns,
-      updateSocket: controllerServerIns.updateSocket,
-      stop: () => {
-        controllerServerIns?.stop()
-        controllerServerIns = null
+  return Promise.all([portIsNotUse(port), portIsNotUse(socketPort)])
+    .then(() => {
+      return controllerServerIns.setController(controller).start({ port, socketPort })
+    })
+    .then((ins) => {
+      return {
+        updateSocket: (...arg) => ins.updateSocket(...arg),
+        stop: () => {
+          ins?.stop()
+        }
       }
-    }
-  })
+    })
 }
 export const closeControllerServer = () => {
   controllerServerIns?.close()

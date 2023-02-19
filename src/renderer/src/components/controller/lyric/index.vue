@@ -113,6 +113,7 @@ const keyBoardEvent = (e) => {
 watch(
   computed(() => props.visible),
   () => {
+    find()
     document[props.visible ? 'addEventListener' : 'removeEventListener']('keydown', keyBoardEvent)
   },
   {

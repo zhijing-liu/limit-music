@@ -94,5 +94,7 @@ button:focus-visible {
 *::-webkit-scrollbar {
   width: 8px;
   background-color: transparent;
-
+}
+*{
+  color :#000000;
 }

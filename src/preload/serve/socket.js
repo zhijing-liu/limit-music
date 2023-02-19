@@ -5,15 +5,15 @@ const socketServer = {}
 export const update = (key, value) => {
   socketServer.playerNsp?.emit(key, value)
 }
-export const createSocket = async (app, socketPort = 20000) => {
-  const server = createServer(app)
-  socketServer.main = new Server(server, {
+export const createSocket = async (socketPort = 20000) => {
+  socketServer.server = createServer()
+  socketServer.main = new Server(socketServer.server, {
     connectTimeout: 5000
   })
   socketServer.playerNsp = socketServer.main.of('/socket-player')
   return new Promise((resolve) => {
-    server.listen(socketPort, '::', () => {
-      resolve(server)
+    socketServer.server.listen(socketPort, '::', () => {
+      resolve(socketServer)
     })
   })
 }

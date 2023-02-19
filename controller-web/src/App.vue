@@ -167,7 +167,7 @@ watch(connecting, () => {
   .button
     margin-top 3vh
     padding 1.5vh 3vw
-    background-color rgba(255,104,140,.2)
+    background-color rgba(255,104,140,.4)
     font-size 2vh
     border-radius 2vh
 .fullDown-quick-enter-active
