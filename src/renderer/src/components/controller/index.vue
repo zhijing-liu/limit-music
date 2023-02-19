@@ -47,25 +47,30 @@ import nextImage from '@/assets/img/next.png'
 import musicImage from '@/assets/img/music.png'
 import defaultImage from '@/assets/img/default.png'
 import randomImage from '@/assets/img/random.png'
-
+// store
+const getControllerStore = controllerStore()
+const getSettingStore = settingStore()
+// 播放组件实例
+const audioIns = ref()
+// 播放模式
 const playModeMap = reactive({
   default: defaultImage,
   random: randomImage
 })
-const setProgress = (current) => {
-  audioIns.value.setCurrent(current)
-}
+// 设置播放模式
 const setPlayMode = () => {
   getControllerStore.playMode = getControllerStore.playMode === 'default' ? 'random' : 'default'
   localStorage.setItem('playMode', getControllerStore.playMode)
 }
-const getControllerStore = controllerStore()
-const getSettingStore = settingStore()
-const audioIns = ref()
-
+// 设置进度条
+const setProgress = (current) => {
+  audioIns.value.setCurrent(current)
+}
+// 播放暂停
 const playPause = (actionName = getControllerStore.isPlaying ? 'pause' : 'play') => {
   audioIns.value[actionName]()
 }
+// 下一首
 const next = () => {
   if (getControllerStore.getMusicMapLength === getControllerStore.getPlayIndex) {
     getControllerStore.setPlayIndex(0)
@@ -73,6 +78,7 @@ const next = () => {
     getControllerStore.setPlayIndex(getControllerStore.getPlayIndex + 1)
   }
 }
+// 上一首
 const last = () => {
   if (getControllerStore.getPlayIndex === 0) {
     getControllerStore.setPlayIndex(getControllerStore.getMusicMapLength - 1)
@@ -80,10 +86,9 @@ const last = () => {
     getControllerStore.setPlayIndex(getControllerStore.getPlayIndex - 1)
   }
 }
+// 歌词控制器
 const lyricVisible = ref(false)
-onMounted(() => {
-  getControllerStore.audioPlayerInstance = audioIns.value
-})
+// 音乐文件与监听变化
 const musicInfo = ref({})
 const playingUrl = computed(() => getControllerStore.playingUrl)
 watch(
@@ -109,6 +114,7 @@ watch(
     immediate: true
   }
 )
+// 监听播放器
 watch(
   computed(() => getControllerStore.isPlaying),
   () => {
@@ -121,6 +127,8 @@ watch(
     getControllerStore.controllerServer?.updateSocket?.('playMode', getControllerStore.playMode)
   }
 )
+
+// 控制器中间鼠标事件控制模块
 const centerActive = ref(false)
 const centerMouseEnter = (e) => {
   centerActive.value = true
@@ -130,6 +138,27 @@ const centerMouseEnter = (e) => {
   }
   e.target.addEventListener('mouseleave', leave)
 }
+// 对外发布的控制器
+const getController = () => ({
+  pause: audioIns.value.pause,
+  play: audioIns.value.play,
+  next,
+  last,
+  playPause: () => {
+    getControllerStore.isPlaying ? audioIns.value.pause() : audioIns.value.play()
+  },
+  getMusicData: () => ({
+    musicInfo: toRaw(musicInfo.value),
+    isPlaying: getControllerStore.isPlaying,
+    playMode: getControllerStore.playMode
+  }),
+  setPlayMode,
+  setPlayingUrl: (value) => {
+    getControllerStore.playingUrl = value
+  },
+  getMusicMap: () => toRaw(getControllerStore.musicMap)
+})
+// 外部控制器监听模块
 watch(
   computed(() => ({
     audio: audioIns.value,
@@ -140,30 +169,13 @@ watch(
   (data) => {
     if (data.enable && audioIns.value !== undefined) {
       window.serve
-        .createControllerServer(
-          {
-            pause: audioIns.value.pause,
-            play: audioIns.value.play,
-            next,
-            last,
-            getMusicData: () => ({
-              musicInfo: toRaw(musicInfo.value),
-              isPlaying: getControllerStore.isPlaying,
-              playMode: getControllerStore.playMode
-            }),
-            setPlayMode,
-            setPlayingUrl: (value) => {
-              getControllerStore.playingUrl = value
-            },
-            getMusicMap: () => toRaw(getControllerStore.musicMap)
-          },
-          {
-            port: data.port,
-            socketPort: data.socketPort
-          }
-        )
+        .createControllerServer({
+          port: data.port,
+          socketPort: data.socketPort
+        })
         .then((r) => {
           getControllerStore.controllerServer = r
+          getControllerStore.controllerServer.setController(getController())
         })
         .catch(() => {
           getSettingStore.webControllerEnable = false
@@ -178,6 +190,12 @@ watch(
     immediate: true
   }
 )
+onMounted(() => {
+  // 全局化歌词实例
+  getControllerStore.audioPlayerInstance = audioIns.value
+  // 传递主进程的控制器
+  window.underlying.setController(getController())
+})
 </script>
 
 <style scoped lang="stylus">

@@ -8,7 +8,7 @@ import {
   scanMusicByPath
 } from './fs'
 import * as serve from './serve'
-
+let controller
 contextBridge.exposeInMainWorld('electron', electronAPI)
 contextBridge.exposeInMainWorld('underlying', {
   closeWindow: () => {
@@ -29,6 +29,9 @@ contextBridge.exposeInMainWorld('underlying', {
   fullScreen: () => {
     return ipcRenderer.invoke('fullScreen')
   },
+  setController: (c) => {
+    controller = c
+  },
   getDirAccessibility,
   scanMusicByPath,
   getPlayUrl,
@@ -37,4 +40,8 @@ contextBridge.exposeInMainWorld('underlying', {
 })
 contextBridge.exposeInMainWorld('serve', {
   ...serve
+})
+ipcRenderer.on('controllerEvent', (event, args) => {
+  console.log(args)
+  controller?.[args.action]?.()
 })

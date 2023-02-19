@@ -134,7 +134,7 @@ class ControllerServer {
       target: `http://127.0.0.1:${socketPort}`, // 目标主机
       changeOrigin: true, // 需要虚拟主机站点
       ws: true, // 是否代理websocket
-      proxyTimeout: 5000
+      proxyTimeout: 3000
     })
     await Promise.all([
       createSocket(socketPort).then((socketServer) => {
@@ -166,22 +166,21 @@ class ControllerServer {
   }
 }
 const controllerServerIns = new ControllerServer()
-export const createControllerServer = async (controller, { port, socketPort }) => {
+export const createControllerServer = async ({ port, socketPort }) => {
   await controllerServerIns?.stop()
-  await controllerServerIns.setController(controller)
-
   return Promise.all([portIsNotUse(port), portIsNotUse(socketPort)])
-    .then(() => {
-      return controllerServerIns.setController(controller).start({ port, socketPort })
-    })
-    .then((ins) => {
-      return {
-        updateSocket: (...arg) => ins.updateSocket(...arg),
-        stop: () => {
-          ins?.stop()
-        }
+    .then(() => controllerServerIns.start({ port, socketPort }))
+    .then((ins) => ({
+      setController: (c) => {
+        ins.setController(c)
+      },
+      updateSocket: (...arg) => {
+        ins.updateSocket(...arg)
+      },
+      stop: () => {
+        ins?.stop()
       }
-    })
+    }))
 }
 export const closeControllerServer = () => {
   controllerServerIns?.close()

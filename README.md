@@ -1,6 +1,6 @@
 # limit-music
 
-## 官网地址: http://43.138.37.12/limitMusic
+## 官网地址: http://www.limit-music.online
 
 ### 这是一个使用Electron 开发的桌面端app
 

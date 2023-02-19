@@ -44,6 +44,33 @@ async function createWindow() {
   tray.setContextMenu(
     Menu.buildFromTemplate([
       {
+        label: '播放',
+        click: () => {
+          mainWindow.webContents.send('controllerEvent', { action: 'play' })
+        }
+      },
+      {
+        label: '暂停',
+        click: () => {
+          mainWindow.webContents.send('controllerEvent', { action: 'pause' })
+        }
+      },
+      {
+        label: '上一首',
+        click: () => {
+          mainWindow.webContents.send('controllerEvent', { action: 'last' })
+        }
+      },
+      {
+        label: '下一首',
+        click: () => {
+          mainWindow.webContents.send('controllerEvent', { action: 'next' })
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
         label: '打开',
         click: () => {
           mainWindow.show()
