@@ -11,7 +11,11 @@
 ```bash
 $ pnpm install
 ```
+或
 
+```bash
+$ pnpm prepare
+```
 ### Development / 开发
 
 ```bash
