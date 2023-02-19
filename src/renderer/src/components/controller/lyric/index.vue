@@ -29,7 +29,15 @@ import fullScreenImage from '@/assets/img/fullScreen.png'
 import arrowHeadRightImage from '@/assets/img/arrowHeadRight.png'
 import { windowHandler } from '@/methods'
 const props = defineProps(['musicInfo', 'visible'])
-const emits = defineEmits(['setProgress', 'update:visible', 'play', 'pause', 'last', 'next'])
+const emits = defineEmits([
+  'setProgress',
+  'update:visible',
+  'play',
+  'pause',
+  'last',
+  'next',
+  'setVolume'
+])
 const lyricIns = ref()
 const getControllerStore = controllerStore()
 const timeStep = computed(() => getControllerStore.current ?? 0)
@@ -95,6 +103,12 @@ const keyBoardMap = {
   },
   ArrowRight: () => {
     changeProgress(getControllerStore.current + 5)
+  },
+  ArrowUp: () => {
+    emits('setVolume', getControllerStore.volume + 5)
+  },
+  ArrowDown: () => {
+    emits('setVolume', getControllerStore.volume - 5)
   },
   PageDown: () => {
     emits('next')

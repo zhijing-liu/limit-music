@@ -19,7 +19,7 @@
     img.icon(:src="nextImage")
   .button(@click="setPlayMode")
     img.icon(:src="playModeMap[getControllerStore.playMode]")
-  .volumeButton(@wheel="onChangeVolume" ref="volumeButtonIns" @mousedown="setVolume")
+  .volumeButton(@wheel="onChangeVolume" ref="volumeButtonIns" @mousedown="valueMouseDown")
     img.icon(:src="soundImage")
     .stateBar(:style="`width:${getControllerStore.volume}%`")
     .value {{Math.floor(getControllerStore.volume)}}
@@ -35,6 +35,7 @@ Transition(name="floatUp")
       @pause="()=>playPause('pause')"
       @last="last"
       @next="next"
+      @setVolume="setVolume"
       )
 </template>
 
@@ -95,7 +96,10 @@ const last = () => {
 const volumeButtonIns = ref()
 
 const onChangeVolume = (e) => {
-  audioIns.value.setVolume(getControllerStore.volume - Math.sign(e.deltaY) * 5)
+  setVolume(getControllerStore.volume - Math.sign(e.deltaY) * 5)
+}
+const setVolume = (v) => {
+  audioIns.value?.setVolume(v)
 }
 let volumeTimer
 const volumeChanged = (v) => {
@@ -104,10 +108,10 @@ const volumeChanged = (v) => {
     getControllerStore.controllerServer?.updateSocket?.('volume', v)
   }, 300)
 }
-const setVolume = (e) => {
+const valueMouseDown = (e) => {
   const rect = volumeButtonIns.value.getBoundingClientRect()
   const setVolumeByPosition = ({ x, y }) => {
-    audioIns.value.setVolume(Math.ceil(((x - rect.x) / rect.width) * 100))
+    setVolume(Math.ceil(((x - rect.x) / rect.width) * 100))
   }
   const stop = () => {
     document.removeEventListener('mousemove', setVolumeByPosition)
