@@ -54,7 +54,7 @@ const touchmove = (e) => {
   musicData.value.volume = Math.min(Math.max(0, touchstartData.volume - v), 100)
 }
 const touchend = () => {
-  musicData.value.volume = Math.ceil(musicData.value.volume)
+  musicData.value.volume = Math.round(musicData.value.volume)
   axios.post('/action', {
     action: 'setVolume',
     args: [musicData.value.volume]

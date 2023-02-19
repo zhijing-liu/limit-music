@@ -13,7 +13,7 @@
       .musicName(v-else)
         .musicNameText {{musicInfo.title??'嗨！欢迎回来'}}
         .musicNameSubtitle
-          .time(v-if="musicInfo.duration" ) {{Math.ceil(getControllerStore.current)}} / {{Math.round(musicInfo.duration)}}s
+          .time(v-if="musicInfo.duration" ) {{Math.round(getControllerStore.current)}} / {{Math.round(musicInfo.duration)}}s
           .artists -- {{musicInfo.artists?.join(' ')??'纸境工作室'}}
   .button(@click="next")
     img.icon(:src="nextImage")
@@ -111,7 +111,7 @@ const volumeChanged = (v) => {
 const valueMouseDown = (e) => {
   const rect = volumeButtonIns.value.getBoundingClientRect()
   const setVolumeByPosition = ({ x, y }) => {
-    setVolume(Math.ceil(((x - rect.x) / rect.width) * 100))
+    setVolume(Math.round(((x - rect.x) / rect.width) * 100))
   }
   setVolumeByPosition(e)
   const stop = () => {
