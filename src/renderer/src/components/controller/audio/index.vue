@@ -7,13 +7,13 @@ audio(
   @play="onPlay"
   @pause="onPause"
   @ended="onEnded"
-  @complete="onComplete"
+  @volumechange="onVolumeChange"
   )
 </template>
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { controllerStore, settingStore } from '@/store'
-const emits = defineEmits(['currentChanged', 'playEnd'])
+const emits = defineEmits(['currentChanged', 'playEnd', 'volumeChanged'])
 const getControllerStore = controllerStore()
 const getSettingStore = settingStore()
 const audioIns = ref()
@@ -30,8 +30,9 @@ const onPause = () => {
 const onEnded = () => {
   emits('playEnd')
 }
-const onComplete = () => {
-  // audioIns.value.autoplay = true
+const onVolumeChange = () => {
+  getControllerStore.volume = audioIns.value.volume * 100
+  emits('volumeChanged', getControllerStore.volume)
 }
 // 触发事件
 const play = async () => {
@@ -52,6 +53,12 @@ const setCurrent = (current) => {
     onCurrentUpdate()
   }
 }
+const setVolume = (volume) => {
+  if (musicData.value !== '') {
+    audioIns.value.volume = Math.min(Math.max(0, volume), 100) / 100
+    onVolumeChange()
+  }
+}
 const loadData = async () => {
   musicData.value = URL.createObjectURL(
     new File(
@@ -63,7 +70,8 @@ const loadData = async () => {
 defineExpose({
   play,
   pause,
-  setCurrent
+  setCurrent,
+  setVolume
 })
 watch(
   computed(() => getControllerStore.playingUrl),

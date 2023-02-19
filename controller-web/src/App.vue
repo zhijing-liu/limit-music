@@ -1,8 +1,14 @@
 <template lang="pug">
-#controller
+#controller(
+  @touchstart.prevent="touchstart"
+  @touchmove.prevent="touchmove"
+  @touchend.prevent="touchend"
+  :style="`background:linear-gradient(to top ,#b8d8ed 0,#b8d8ed ${musicData?.volume??50}%,#FFFFFF ${musicData?.volume??50}%,#FFFFFF 100%);`"
+  )
   .title {{musicData?.musicInfo?.title}}
+  .subTitle {{musicData?.musicInfo?.artists?.join(' ')}}
   img.album(:src="musicData?.musicInfo?.albumPic??musicImage")
-  .buttons
+  .buttons(@touchstart.stop @touchmove.stop @touchend.stop)
     img.button(:src="listImage" @click="musicListIns.setVisible")
     img.button(:src="lastImage" @click="last")
     img.button(v-if="musicData?.isPlaying" :src="pauseImage" @click="pause")
@@ -37,6 +43,22 @@ const playModeMap = reactive({
 })
 const musicData = ref({})
 const musicListIns = ref({})
+const touchstartData = {}
+const touchstart = (e) => {
+  touchstartData.y = e.targetTouches[0].pageY
+  touchstartData.volume = musicData.value.volume
+  touchstartData.height = document.body.getBoundingClientRect().height
+}
+const touchmove = (e) => {
+  const v = Math.ceil(((e.targetTouches[0].pageY - touchstartData.y) / touchstartData.height) * 250)
+  musicData.value.volume = Math.min(Math.max(0, touchstartData.volume - v), 100)
+}
+const touchend = () => {
+  axios.post('/action', {
+    action: 'setVolume',
+    args: [musicData.value.volume]
+  })
+}
 const play = () => {
   axios.post('/action', {
     action: 'play'
@@ -97,6 +119,9 @@ const createSocket = () => {
     .on('playMode', (data) => {
       musicData.value.playMode = data
     })
+    .on('volume', (data) => {
+      musicData.value.volume = data
+    })
     .connect()
 }
 const connect = () => {
@@ -131,10 +156,15 @@ watch(connecting, () => {
   align-items center
   overflow hidden
   flex-direction column
-  background-color #FFFFFF
+  position relative
   .title
     font-size 3.2vh
     margin-bottom 5vh
+    font-weight 1000
+  .subTitle
+    font-size 2vh
+    font-weight 700
+    margin-bottom 3vh
   .album
     width 40vw
     margin-bottom 20vh

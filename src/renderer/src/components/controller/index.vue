@@ -19,7 +19,11 @@
     img.icon(:src="nextImage")
   .button(@click="setPlayMode")
     img.icon(:src="playModeMap[getControllerStore.playMode]")
-AudioComponent(ref="audioIns" @playEnd="next")
+  .volumeButton(@wheel="onChangeVolume" ref="volumeButtonIns" @mousedown="setVolume")
+    img.icon(:src="soundImage")
+    .stateBar(:style="`width:${getControllerStore.volume}%`")
+    .value {{Math.floor(getControllerStore.volume)}}
+AudioComponent(ref="audioIns" @playEnd="next" @volumeChanged="volumeChanged")
 Transition(name="floatUp")
   KeepAlive
     Lyric(
@@ -47,6 +51,7 @@ import nextImage from '@/assets/img/next.png'
 import musicImage from '@/assets/img/music.png'
 import defaultImage from '@/assets/img/default.png'
 import randomImage from '@/assets/img/random.png'
+import soundImage from '@/assets/img/sound.png'
 // store
 const getControllerStore = controllerStore()
 const getSettingStore = settingStore()
@@ -85,6 +90,33 @@ const last = () => {
   } else {
     getControllerStore.setPlayIndex(getControllerStore.getPlayIndex - 1)
   }
+}
+// 音量调节
+const volumeButtonIns = ref()
+
+const onChangeVolume = (e) => {
+  audioIns.value.setVolume(getControllerStore.volume - Math.sign(e.deltaY) * 5)
+}
+let volumeTimer
+const volumeChanged = (v) => {
+  clearTimeout(volumeTimer)
+  volumeTimer = setTimeout(() => {
+    getControllerStore.controllerServer?.updateSocket?.('volume', v)
+  }, 300)
+}
+const setVolume = (e) => {
+  const rect = volumeButtonIns.value.getBoundingClientRect()
+  const setVolumeByPosition = ({ x, y }) => {
+    audioIns.value.setVolume(Math.ceil(((x - rect.x) / rect.width) * 100))
+  }
+  const stop = () => {
+    document.removeEventListener('mousemove', setVolumeByPosition)
+    document.removeEventListener('mouseup', stop)
+    document.removeEventListener('mouseleave', stop)
+  }
+  document.addEventListener('mousemove', setVolumeByPosition)
+  document.addEventListener('mouseup', stop)
+  document.addEventListener('mouseleave', stop)
 }
 // 歌词控制器
 const lyricVisible = ref(false)
@@ -147,10 +179,12 @@ const getController = () => ({
   playPause: () => {
     getControllerStore.isPlaying ? audioIns.value.pause() : audioIns.value.play()
   },
+  setVolume: audioIns.value.setVolume,
   getMusicData: () => ({
     musicInfo: toRaw(musicInfo.value),
     isPlaying: getControllerStore.isPlaying,
-    playMode: getControllerStore.playMode
+    playMode: getControllerStore.playMode,
+    volume: getControllerStore.volume
   }),
   setPlayMode,
   setPlayingUrl: (value) => {
@@ -205,7 +239,7 @@ onMounted(() => {
   align-items center
   box-sizing border-box
   justify-content center
-  padding 10px 10vw
+  padding 10px 5vw
   border-radius 15px
   background-color rgba(46,169,223,.2)
   margin-top 10px
@@ -280,4 +314,45 @@ onMounted(() => {
       .icon
         width 32px
         height 32px
+  .volumeButton
+    width 45px
+    height 45px
+    display flex
+    align-items center
+    border-radius 13px
+    transition all 0.3s 0.5s
+    position relative
+    overflow hidden
+    .icon
+      width 26px
+      height 26px
+      //transition all 0.3s
+      position absolute
+      left 50%
+      transform translateX(-50%)
+      transition opacity 0.3s
+    .stateBar
+      opacity 0
+      background-color rgba(46,169,223,.5)
+      transition opacity 0.3s , width 0.1s
+      height 100%
+    .value
+      position absolute
+      width 100%
+      height 100%
+      display flex
+      justify-content center
+      align-items center
+      opacity 0
+      color rgba(255,255,255,.4)
+      font-weight bolder
+    &:hover
+      background-color rgba(46,169,223,.2)
+      width 160px
+      transition-delay 0s
+      .icon
+        opacity 0
+      .value
+      .stateBar
+        opacity 1
 </style>

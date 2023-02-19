@@ -58,6 +58,7 @@ export const controllerStore = defineStore('controller', {
     musicMap: {},
     playingUrl: localStorage.getItem('playingUrl') ?? '',
     current: 0,
+    volume: 100,
     isPlaying: false,
     playMode: localStorage.getItem('playMode') ?? 'default', // 'default' 'random',
     audioPlayerInstance: null,
