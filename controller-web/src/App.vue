@@ -50,10 +50,11 @@ const touchstart = (e) => {
   touchstartData.height = document.body.getBoundingClientRect().height
 }
 const touchmove = (e) => {
-  const v = Math.ceil(((e.targetTouches[0].pageY - touchstartData.y) / touchstartData.height) * 250)
+  const v = ((e.targetTouches[0].pageY - touchstartData.y) / touchstartData.height) * 250
   musicData.value.volume = Math.min(Math.max(0, touchstartData.volume - v), 100)
 }
 const touchend = () => {
+  musicData.value.volume = Math.ceil(musicData.value.volume)
   axios.post('/action', {
     action: 'setVolume',
     args: [musicData.value.volume]
