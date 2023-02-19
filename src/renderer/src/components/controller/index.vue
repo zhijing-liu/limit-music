@@ -113,6 +113,7 @@ const valueMouseDown = (e) => {
   const setVolumeByPosition = ({ x, y }) => {
     setVolume(Math.ceil(((x - rect.x) / rect.width) * 100))
   }
+  setVolumeByPosition(e)
   const stop = () => {
     document.removeEventListener('mousemove', setVolumeByPosition)
     document.removeEventListener('mouseup', stop)
