@@ -42,6 +42,5 @@ contextBridge.exposeInMainWorld('serve', {
   ...serve
 })
 ipcRenderer.on('controllerEvent', (event, args) => {
-  console.log(args)
   controller?.[args.action]?.()
 })

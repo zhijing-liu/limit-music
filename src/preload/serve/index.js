@@ -1,12 +1,14 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import ip from 'ip'
-import { createSocket, update } from './socket.js'
+
+import { createSocket } from './socket.js'
 import net from 'node:net'
 import { join } from 'node:path'
 import { accessSync, statSync } from 'node:fs'
 import { createProxyMiddleware } from 'http-proxy-middleware'
+import { actions } from '../../../tools/ipConfig'
 
+console.log(actions)
 const map = {
   key: {},
   path: {}
@@ -82,9 +84,8 @@ export const setShareServerClose = () => {
 export const getFileKey = (path) => {
   return map.key[path] ?? createKeyPath(path)
 }
-
-export const getIp = () => {
-  return ip.address()
+export const getIp = (action) => {
+  return actions.get(action)?.()
 }
 // 远程控制
 class ControllerServer {

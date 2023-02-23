@@ -14,7 +14,7 @@ $ pnpm install
 或
 
 ```bash
-$ pnpm prepare
+$ pnpm prepare-start
 ```
 ### Development / 开发
 

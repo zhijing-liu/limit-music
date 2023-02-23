@@ -27,7 +27,7 @@ const data = reactive({
 const imageSrc = ref('')
 const imageUrl = computed(
   () =>
-    `http://${window.serve.getIp()}:${
+    `http://${window.serve.getIp('getLocalIPv4')?.address}:${
       getSettingStore.webServePort
     }/getMusic/${window.serve.getFileKey(data.path)}/${data.fileName}`
 )
@@ -42,6 +42,7 @@ defineExpose({
   }
 })
 watch(imageUrl, async () => {
+  console.log(window.serve.getIp('getLocalIPv4'))
   imageSrc.value = imageUrl.value
     ? await QRCode.toDataURL(imageUrl.value, {
         color: {

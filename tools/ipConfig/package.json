@@ -1,0 +1,15 @@
+{
+  "name": "ip-config",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "index.js",
+  "type": "module",
+  "scripts": {
+    "init-dependence": "pnpm i",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

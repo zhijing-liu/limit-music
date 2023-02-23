@@ -21,7 +21,10 @@ const imageSrc = ref('')
 const visible = ref(false)
 const getSettingStore = settingStore()
 const imageUrl = computed(
-  () => `http://${window.serve.getIp()}:${getSettingStore.webControllerPort}/controller`
+  () =>
+    `http://${window.serve.getIp('getLocalIPv4')?.address}:${
+      getSettingStore.webControllerPort
+    }/controller`
 )
 const clickTitle = () => {
   open(imageUrl.value)
