@@ -165,6 +165,15 @@ const settingGroups = reactive({
         mode: 'number',
         min: 1,
         max: 65534
+      },
+      {
+        label: '使用公网ipv6进行配置',
+        index: 'webServe-6',
+        value: computed({
+          get: () => getSettingStore.webControllerUsePublicIPv6,
+          set: (v) => (getSettingStore.webControllerUsePublicIPv6 = v)
+        }),
+        type: 'switch'
       }
     ]
   }

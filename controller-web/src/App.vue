@@ -97,6 +97,8 @@ const playSocketIns = ref()
 const connectError = ref(false)
 const createSocket = () => {
   playSocketIns.value = new Manager({
+    host: location.hostname,
+    port: location.port,
     timeout: 2500,
     reconnectionAttempts: 5
   })

@@ -10,7 +10,11 @@ export const actions = new Map([
       for (const netCard in network) {
         for (const ipInfo of network[netCard]) {
           Reflect.defineProperty(map, ipInfo.address.toString(), {
-            value: { ...ipInfo, netCard },
+            value: {
+              ...ipInfo,
+              netCard,
+              webAddress: ipInfo.family === 'IPv4' ? ipInfo.address : `[${ipInfo.address}]`
+            },
             enumerable: true
           })
         }

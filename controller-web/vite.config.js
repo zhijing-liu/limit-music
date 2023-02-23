@@ -9,7 +9,7 @@ export default defineConfig({
   },
   server: {
     port: 10001,
-    host: true,
+    host: '::',
     proxy: {
       '/action': 'http://127.0.0.1:10000/',
       '/socket.io': {

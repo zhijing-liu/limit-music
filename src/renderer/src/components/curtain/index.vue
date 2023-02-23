@@ -7,7 +7,7 @@ Transition(name="fullDown")
 </template>
 
 <script setup>
-import { computed, onBeforeMount, onMounted, toRaw, watch } from 'vue'
+import { computed, nextTick, onBeforeMount, onMounted, toRaw, watch } from 'vue'
 import { controllerStore, componentVisibleStore, settingStore } from '@/store'
 import logoImage from '@/assets/logo.png'
 import { useRouter } from 'vue-router'
@@ -41,6 +41,22 @@ watch(
       })
     } else {
       window.serve.setShareServerClose({ port: data.port })
+    }
+  },
+  {
+    immediate: true
+  }
+)
+watch(
+  computed(() => getSettingStore.webControllerUsePublicIPv6),
+  (data) => {
+    if (getSettingStore.webControllerUsePublicIPv6) {
+      const ipv6Data = window.serve.getIp('getPublicIPv6')
+      nextTick(() => {
+        if (ipv6Data === undefined) {
+          getSettingStore.webControllerUsePublicIPv6 = false
+        }
+      })
     }
   },
   {

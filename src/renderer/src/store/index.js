@@ -121,6 +121,7 @@ const settings = {
   webControllerEnable: true,
   webControllerPort: 10000,
   webControllerSocketPort: 20000,
+  webControllerUsePublicIPv6: false,
   ...JSON.parse(localStorage.getItem('setting') ?? '{}')
 }
 export const settingStore = defineStore('setting', {

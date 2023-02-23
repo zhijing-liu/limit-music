@@ -27,9 +27,13 @@ const data = reactive({
 const imageSrc = ref('')
 const imageUrl = computed(
   () =>
-    `http://${window.serve.getIp('getLocalIPv4')?.address}:${
-      getSettingStore.webServePort
-    }/getMusic/${window.serve.getFileKey(data.path)}/${data.fileName}`
+    `http://${
+      window.serve.getIp(
+        getSettingStore.webControllerUsePublicIPv6 ? 'getPublicIPv6' : 'getLocalIPv4'
+      )?.webAddress
+    }:${getSettingStore.webServePort}/getMusic/${window.serve.getFileKey(data.path)}/${
+      data.fileName
+    }`
 )
 
 defineExpose({
@@ -41,17 +45,22 @@ defineExpose({
     visible.value = true
   }
 })
-watch(imageUrl, async () => {
-  console.log(window.serve.getIp('getLocalIPv4'))
-  imageSrc.value = imageUrl.value
-    ? await QRCode.toDataURL(imageUrl.value, {
-        color: {
-          light: '#81c7d400',
-          dark: '#8F5A3CDD'
-        }
-      })
-    : ''
-})
+watch(
+  imageUrl,
+  async () => {
+    imageSrc.value = imageUrl.value
+      ? await QRCode.toDataURL(imageUrl.value, {
+          color: {
+            light: '#81c7d400',
+            dark: '#8F5A3CDD'
+          }
+        })
+      : ''
+  },
+  {
+    flush: 'post'
+  }
+)
 const clickTitle = () => {
   open(imageUrl.value)
 }

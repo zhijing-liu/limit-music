@@ -8,7 +8,6 @@ import { accessSync, statSync } from 'node:fs'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import { actions } from '../../../tools/ipConfig'
 
-console.log(actions)
 const map = {
   key: {},
   path: {}
@@ -132,7 +131,7 @@ class ControllerServer {
     this.app.enabled('/socket.io')
 
     this.handler = createProxyMiddleware({
-      target: `http://127.0.0.1:${socketPort}`, // 目标主机
+      target: `http://[0.0.0.0]:${socketPort}`, // 目标主机
       changeOrigin: true, // 需要虚拟主机站点
       ws: true, // 是否代理websocket
       proxyTimeout: 3000

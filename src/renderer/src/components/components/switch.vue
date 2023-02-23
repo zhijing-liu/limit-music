@@ -1,17 +1,32 @@
 <template lang="pug">
 .switch.pointing(@click="click")
   .line
-  .punctuation(:style="`background-color:${active?'#24936E':'#DB4D6D'};`" :class="{active}")
+  .punctuation(:style="`background-color:${at?'#24936E':'#DB4D6D'};`" :class="{active:at}")
 </template>
 
 <script setup>
+import { computed, ref, watch } from 'vue'
+
 const props = defineProps(['active'])
 const emits = defineEmits(['update:active', 'change'])
+const at = ref()
 const click = () => {
-  const result = !props.active
-  emits('update:active', result)
-  emits('change', result)
+  at.value = !at.value
+  setTimeout(() => {
+    const result = !props.active
+    emits('update:active', result)
+    emits('change', result)
+  }, 300)
 }
+watch(
+  computed(() => props.active),
+  () => {
+    at.value = props.active
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
 <style scoped lang="stylus">

@@ -22,9 +22,11 @@ const visible = ref(false)
 const getSettingStore = settingStore()
 const imageUrl = computed(
   () =>
-    `http://${window.serve.getIp('getLocalIPv4')?.address}:${
-      getSettingStore.webControllerPort
-    }/controller`
+    `http://${
+      window.serve.getIp(
+        getSettingStore.webControllerUsePublicIPv6 ? 'getPublicIPv6' : 'getLocalIPv4'
+      )?.webAddress
+    }:${getSettingStore.webControllerPort}/controller`
 )
 const clickTitle = () => {
   open(imageUrl.value)
@@ -35,16 +37,23 @@ const close = () => {
 const afterLeave = () => {
   getComponentVisibleStore.webControllerVisible = false
 }
-onMounted(async () => {
-  imageSrc.value = imageUrl.value
-    ? await QRCode.toDataURL(imageUrl.value, {
-        color: {
-          light: '#81c7d400',
-          dark: '#8F5A3CDD'
-        }
-      })
-    : ''
-})
+watch(
+  imageUrl,
+  async () => {
+    imageSrc.value = imageUrl.value
+      ? await QRCode.toDataURL(imageUrl.value, {
+          color: {
+            light: '#81c7d400',
+            dark: '#8F5A3CDD'
+          }
+        })
+      : ''
+  },
+  {
+    immediate: true,
+    flush: 'post'
+  }
+)
 </script>
 
 <style scoped lang="stylus">
