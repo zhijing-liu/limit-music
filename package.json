@@ -1,10 +1,10 @@
 {
   "name": "limit-music",
-  "version": "0.1.1-dev",
+  "version": "1.0.0",
   "description": "limit-music 年轻人的第一个音乐播放器",
   "main": "./out/main/index.js",
   "author": "纸境工作室",
-  "homepage": "https://www.electronjs.org",
+  "homepage": "http://www.limit-music.online",
   "scripts": {
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
@@ -35,7 +35,6 @@
   "dependencies": {
     "@electron-toolkit/preload": "^1.0.3",
     "@electron-toolkit/utils": "^1.0.2",
-    "@purtuga/esm-webpack-plugin": "^1.5.0",
     "body-parser": "^1.20.1",
     "dexie": "^3.2.3",
     "electron-updater": "^5.3.0",
