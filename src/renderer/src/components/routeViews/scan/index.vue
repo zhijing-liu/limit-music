@@ -46,7 +46,9 @@ import closeImage from '@/assets/img/close.png'
 import helpImage from '@/assets/img/help.png'
 import { audio } from '@/methods'
 import { controllerStore } from '@/store'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const musicTypeSrcMap = {
   '.flac': flacImage,
   '.mp3': mp3Image,
@@ -97,6 +99,9 @@ const addToPlayList = async () => {
   }
   await getControllerStore.setMusicMap(listMap)
   scanResultPopVisible.value = false
+  setTimeout(() => {
+    router.push({ name: 'main' })
+  })
 }
 </script>
 

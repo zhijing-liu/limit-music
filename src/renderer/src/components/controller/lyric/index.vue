@@ -1,15 +1,22 @@
 <template lang="pug">
 #lyricBoard
-  img.closeButton(:src="downImage" @click="emits('update:visible',false)")
-  img.fullScreenButton(:src="fullScreenImage" @click="fullScreen")
-  img.arrowHeadRightButton(:src="arrowHeadRightImage" @click="hide()")
+  .closeButton(@click="emits('update:visible',false)")
+    img(:src="downImage")
+    span 隐藏歌词
+  .fullScreenButton(@click="fullScreen")
+    img(:src="fullScreenImage")
+    span 全屏
+  .arrowHeadRightButton(@click="hide()")
+    img(:src="arrowHeadRightImage")
+    span 最小化
   .musicInfo
     .title {{musicInfo.title}}
     .artists {{musicInfo.artists?.join(' ')}}
-    .album
+    .album.pointing
       img.blurBak(:src="musicInfo.albumPic")
-      .albumPic(:style="`background-image: url('${musicInfo.albumPic}')`")
+      img.albumPic(:src="musicInfo.albumPic")
   #lyrics.noScrollBar(:key="getControllerStore.playingUrl")
+    .blank
     .lyric.pointing.pinYin(
       v-for="({time,lyric},index) in musicInfo.lyricList"
       :class="{light:index===step-1}"
@@ -17,12 +24,13 @@
       :ref="(el)=>index===step-1&&(lyricIns=el)"
       @wheel.passive="wheel"
       @click.stop="()=>changeProgress((time + 1) / 1000)"
-    ) {{ lyric }}
+    ) {{ lyric||'- -' }}
+    .blank
   .back(:style="`background-image:url('${musicInfo.albumPic}')`")
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { controllerStore } from '@/store'
 import downImage from '@/assets/img/down.png'
 import fullScreenImage from '@/assets/img/fullScreen.png'
@@ -40,30 +48,23 @@ const emits = defineEmits([
 ])
 const lyricIns = ref()
 const getControllerStore = controllerStore()
-const timeStep = computed(() => getControllerStore.current ?? 0)
-const step = ref(0)
-let lastStep = 0
+const timeStep = computed(() => (getControllerStore.current ?? 0) * 1000)
+
 const allowLocating = ref(true)
-const find = () => {
-  if (
-    props.musicInfo.lyricList[step.value].time < timeStep.value * 1000 &&
-    props.musicInfo.lyricList.length - 1 > step.value
-  ) {
-    step.value++
-    find()
+const start = ref(0)
+const nextStep = computed(() => {
+  return props.musicInfo.lyricList[start.value]?.time ?? 0
+})
+const resetStep = () => {
+  start.value = props.musicInfo.lyricList.findIndex(({ time }) => time > timeStep.value)
+}
+let lastStep = 0
+const step = computed(() => {
+  if (timeStep.value < lastStep || nextStep.value < timeStep.value) {
+    resetStep()
   }
   lastStep = timeStep.value
-}
-onMounted(() => {
-  find()
-})
-watch(timeStep, () => {
-  if (props.musicInfo.lyricList[step.value]) {
-    if (lastStep > timeStep.value) {
-      step.value = 0
-    }
-    find()
-  }
+  return start.value
 })
 watchEffect(() => {
   allowLocating.value &&
@@ -127,18 +128,10 @@ const keyBoardEvent = (e) => {
 watch(
   computed(() => props.visible),
   () => {
-    find()
     document[props.visible ? 'addEventListener' : 'removeEventListener']('keydown', keyBoardEvent)
   },
   {
     immediate: true
-  }
-)
-watch(
-  () => getControllerStore.playingUrl,
-  () => {
-    lastStep = 0
-    step.value = 0
   }
 )
 </script>
@@ -151,10 +144,11 @@ watch(
   left 0
   bottom 0
   display flex
-  overflow auto
+  overflow hidden
   align-items center
   justify-content center
   z-index 100
+  padding 10vh 10vw
   background-color #FFFFFF
   .arrowHeadRightButton
   .fullScreenButton
@@ -163,10 +157,28 @@ watch(
     width 30px
     height 30px
     padding 10px
-    border-radius 33%
+    border-radius 10px
     transition all 0.3s
+    display flex
+    align-items center
+    opacity 0.7
     &:hover
-      background-color rgba(255,255,255,.09)
+      background-color rgba(255,255,255,.4)
+      width 100px
+      opacity 1
+      span
+        opacity 1
+    img
+      height 100%
+      flex 0 0 auto
+    span
+      flex 0 0 auto
+      font-weight bold
+      padding 10px
+      box-sizing border-box
+      opacity 0
+      transition all 0.3s
+      color #666666
   .fullScreenButton
     top 30px
     right 30px
@@ -175,11 +187,15 @@ watch(
     bottom 30px
   .closeButton
     top 30px
-    left 30px
+    left 60px
   .musicInfo
     display flex
+    flex 1
     flex-direction column
     align-items center
+    transition all 0.3s
+    &:hover
+      flex 2
     .title
       font-size 3vh
       padding 1vh 0
@@ -189,29 +205,33 @@ watch(
       padding 1vh 0
       font-weight bolder
     .album
-      height 200px
-      width 200px
+      height 100%
+      width 100%
       display flex
       justify-content center
       align-items center
       position relative
-      margin-left 30px
-      margin-right 30px
+      margin 30px
       .blurBak
         filter blur(8px)
-        height 100%
+        //height 100%
         width 100%
-        position absolute
-        border-radius 6px
+        border-radius 10%
+        //position absolute
         overflow hidden
         z-index -1
+        object-fit contain
+        //background-size object-fit
+
       .albumPic
         width 75%
-        height 75%
+        //height 75%
+        position absolute
         border-radius 10%
         overflow hidden
-        background-size contain
+        object-fit contain
   #lyrics
+    flex 3
     display flex
     flex-direction column
     max-height 70vh
@@ -224,15 +244,23 @@ watch(
     position relative
     border-radius 5vh
     .lyric
-      color #222222
-      font-weight bold
+      color #FFFFFF
       word-wrap anywhere
       transition all 0.8s
       text-align center
       line-height 5.4vh
       font-size 3vh
+      filter blur(1px)
+      flex 1 0 5.4vh
     .lyric.light
-      color #FFFFFF
+      filter none
+      font-size 5vh
+      line-height 8.4vh
+      font-weight bold
+      flex 1 0 8.4vh
+    .blank
+      height 30vh
+      flex 1 0 30vh
   .back
     position absolute
     top 0
@@ -244,4 +272,6 @@ watch(
     background-position center center
     z-index -2
     opacity 0.7
+    background-color rgba(0, 0, 0, 0.4)
+    background-blend-mode darken
 </style>

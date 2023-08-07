@@ -181,9 +181,7 @@ const getController = () => ({
   play: audioIns.value.play,
   next,
   last,
-  playPause: () => {
-    getControllerStore.isPlaying ? audioIns.value.pause() : audioIns.value.play()
-  },
+  playPause,
   setVolume: audioIns.value.setVolume,
   getMusicData: () => ({
     musicInfo: toRaw(musicInfo.value),
