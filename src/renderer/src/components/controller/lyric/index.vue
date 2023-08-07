@@ -134,6 +134,13 @@ watch(
     immediate: true
   }
 )
+watch(
+  () => getControllerStore.playingUrl,
+  () => {
+    lastStep = 0
+    start.value = 0
+  }
+)
 </script>
 
 <style scoped lang="stylus">
