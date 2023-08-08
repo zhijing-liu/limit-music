@@ -1,6 +1,6 @@
 {
   "name": "limit-music",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "limit-music 年轻人的第一个音乐播放器",
   "main": "./out/main/index.js",
   "author": "纸境工作室",
