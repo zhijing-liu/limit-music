@@ -32,7 +32,11 @@ musicInfoDb.version(2).stores({
     musicInfoDbKeys.musicItem.line
   ).toString()}`
 })
-
+export const globalStore = defineStore('globalStore', {
+  state: () => ({
+    screenFrame: 60
+  })
+})
 const getDbMusicMap = async () => {
   const map =
     (await musicInfoDb.musicItem.count()) > 0
@@ -122,6 +126,12 @@ const settings = {
   webControllerPort: 10000,
   webControllerSocketPort: 20000,
   webControllerUsePublicIPv6: false,
+  // 流光
+  streamerType: 'none',
+  streamerCount: 20,
+  streamerBlur: false,
+  streamerSpeed: 1,
+  // 本地存储记忆
   ...JSON.parse(localStorage.getItem('setting') ?? '{}')
 }
 export const settingStore = defineStore('setting', {

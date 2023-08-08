@@ -20,7 +20,12 @@
                 Warning(v-if="item.warning" :info="item.warning")
               .right
                 Input(v-model:value="item.value" :mode="item.mode" :min="item.min" :max="item.max")
-                .unit {{item.unit}}
+                .unit(v-if="item.unit") {{item.unit}}
+            .item(v-if="item.type==='selection'" :key="item.index")
+              .label {{item.label}}
+                Warning(v-if="item.warning" :info="item.warning")
+              .right
+                Selection(v-model:value="item.value" :options="item.options")
 </template>
 
 <script setup>
@@ -28,9 +33,11 @@ import { computed, reactive, ref, watch } from 'vue'
 import scanIcon from '@/assets/icon/scan.svg'
 import listIcon from '@/assets/icon/list.svg'
 import windowIcon from '@/assets/img/window.png'
+import colorIcon from '@/assets/img/colorful.png'
 import Switch from '@/components/components/switch.vue'
 import Warning from '@/components/components/warning.vue'
 import Input from '@/components/components/input.vue'
+import Selection from '@/components/components/selection.vue'
 import { settingStore } from '@/store'
 
 const tabKey = ref('window')
@@ -174,6 +181,79 @@ const settingGroups = reactive({
           set: (v) => (getSettingStore.webControllerUsePublicIPv6 = v)
         }),
         type: 'switch'
+      }
+    ]
+  },
+  colorful: {
+    title: '样式',
+    icon: colorIcon,
+    items: [
+      {
+        label: '流光',
+        index: 'colorful-1',
+        value: computed({
+          get: () => getSettingStore.streamerType,
+          set: (v) => (getSettingStore.streamerType = v)
+        }),
+        options: [
+          {
+            label: '关闭',
+            value: 'none'
+          },
+          {
+            label: '雨润',
+            value: 'rain'
+          },
+          {
+            label: '飞星',
+            value: 'star'
+          },
+          {
+            label: '雪花',
+            value: 'snow'
+          }
+        ],
+        type: 'selection'
+      },
+      {
+        label: '流光数量',
+        index: 'colorful-2',
+        value: computed({
+          get: () => {
+            return getSettingStore.streamerCount
+          },
+          set: (v) => (getSettingStore.streamerCount = v)
+        }),
+        type: 'input',
+        mode: 'number',
+        min: 1,
+        max: 100
+      },
+      {
+        label: '流光动态模糊',
+        index: 'colorful-3',
+        value: computed({
+          get: () => {
+            return getSettingStore.streamerBlur
+          },
+          set: (v) => (getSettingStore.streamerBlur = v)
+        }),
+        type: 'switch',
+        warning: '对性能可能会造成影响'
+      },
+      {
+        label: '流光速度',
+        index: 'colorful-4',
+        value: computed({
+          get: () => {
+            return getSettingStore.streamerSpeed
+          },
+          set: (v) => (getSettingStore.streamerSpeed = v)
+        }),
+        type: 'input',
+        mode: 'number',
+        min: 0.5,
+        max: 2
       }
     ]
   }

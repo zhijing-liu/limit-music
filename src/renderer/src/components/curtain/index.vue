@@ -7,8 +7,8 @@ Transition(name="fullDown")
 </template>
 
 <script setup>
-import { computed, nextTick, onBeforeMount, onMounted, toRaw, watch } from 'vue'
-import { controllerStore, componentVisibleStore, settingStore } from '@/store'
+import { computed, nextTick, onBeforeMount, watch } from 'vue'
+import { controllerStore, componentVisibleStore, settingStore, globalStore } from '@/store'
 import logoImage from '@/assets/logo.png'
 import { useRouter } from 'vue-router'
 
@@ -16,8 +16,8 @@ const getControllerStore = controllerStore()
 const getSettingStore = settingStore()
 const getComponentVisibleStore = componentVisibleStore()
 const router = useRouter()
+
 let mounted = false
-onMounted(async () => {})
 onBeforeMount(async () => {
   await getControllerStore.refreshMusicMap()
   await router.push({ name: 'main' })

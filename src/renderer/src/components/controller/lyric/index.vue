@@ -15,42 +15,57 @@
     .album.pointing
       img.blurBak(:src="musicInfo.albumPic")
       img.albumPic(:src="musicInfo.albumPic")
-  #lyrics.noScrollBar(:key="getControllerStore.playingUrl")
+  #lyrics.noScrollBar(:key="getControllerStore.playingUrl"
+    @wheel.prevent="wheel")
     .blank
-    .lyric.pointing.pinYin(
+    .lyric.pointing.dongJingXiaoLangMan(
       v-for="({time,lyric},index) in musicInfo.lyricList"
-      :class="{light:index===step-1}"
+      :class="{light:index===step}"
       :key="index"
-      :ref="(el)=>index===step-1&&(lyricIns=el)"
-      @wheel.passive="wheel"
+      :style="`filter:blur(${(Math.abs(index-step))/3}px);`"
+      :ref="(el)=>index===step&&(lyricIns=el)"
       @click.stop="()=>changeProgress((time + 1) / 1000)"
-    ) {{ lyric||'- -' }}
+    ) {{ lyric||'- -' }}`
     .blank
-  .back(:style="`background-image:url('${musicInfo.albumPic}')`")
+  .back.backImage(:style="`background-image:url('${musicInfo.albumPic}')`")
+  Streamer.back(v-if="getSettingStore.streamerType!=='none'")
 </template>
 
 <script setup>
-import { computed, ref, watch, watchEffect } from 'vue'
-import { controllerStore } from '@/store'
+import {
+  computed,
+  onActivated,
+  onBeforeUnmount,
+  onDeactivated,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+  watchEffect
+} from 'vue'
+import { controllerStore, settingStore } from '@/store'
 import downImage from '@/assets/img/down.png'
 import fullScreenImage from '@/assets/img/fullScreen.png'
 import arrowHeadRightImage from '@/assets/img/arrowHeadRight.png'
 import { windowHandler } from '@/methods'
+import Streamer from './components/streamer.vue'
 const props = defineProps(['musicInfo', 'visible'])
+
 const emits = defineEmits([
   'setProgress',
   'update:visible',
-  'play',
-  'pause',
+  'playPause',
   'last',
   'next',
   'setVolume'
 ])
-const lyricIns = ref()
 const getControllerStore = controllerStore()
+const getSettingStore = settingStore()
+
+const lyricIns = ref()
 const timeStep = computed(() => (getControllerStore.current ?? 0) * 1000)
 
-const allowLocating = ref(true)
+const allowLocating = ref(false)
 const start = ref(0)
 const nextStep = computed(() => {
   return props.musicInfo.lyricList[start.value]?.time ?? 0
@@ -64,26 +79,28 @@ const step = computed(() => {
     resetStep()
   }
   lastStep = timeStep.value
-  return start.value
+  const s = start.value - 1 + (allowLocating.value ? scrollStep.value : 0)
+  return Math.min(props.musicInfo.lyricList.length - 1, Math.max(0, s))
 })
 watchEffect(() => {
-  allowLocating.value &&
-    lyricIns.value?.scrollIntoView({
-      block: 'center'
-    })
+  lyricIns.value?.scrollIntoView({
+    block: 'center'
+  })
 })
 const changeProgress = (time) => {
   emits('setProgress', time)
-  allowLocating.value = true
+  allowLocating.value = false
   clearTimeout(wheelTimer)
 }
 let wheelTimer
-
-const wheel = () => {
-  allowLocating.value = false
+const scrollStep = ref(0)
+const wheel = (e) => {
+  allowLocating.value = true
   clearTimeout(wheelTimer)
+  scrollStep.value += Math.sign(e.deltaY)
   wheelTimer = setTimeout(() => {
-    allowLocating.value = true
+    allowLocating.value = false
+    scrollStep.value = 0
   }, 3000)
 }
 const fullScreen = () => {
@@ -97,7 +114,7 @@ const keyBoardMap = {
     emits('update:visible', false)
   },
   Space: () => {
-    emits(getControllerStore.isPlaying ? 'pause' : 'play')
+    emits('playPause')
   },
   ArrowLeft: () => {
     changeProgress(Math.max(0, getControllerStore.current - 5))
@@ -125,15 +142,13 @@ const keyBoardEvent = (e) => {
   keyBoardMap[e.code]?.(e)
   e.preventDefault()
 }
-watch(
-  computed(() => props.visible),
-  () => {
-    document[props.visible ? 'addEventListener' : 'removeEventListener']('keydown', keyBoardEvent)
-  },
-  {
-    immediate: true
-  }
-)
+onActivated(() => {
+  document.addEventListener('keydown', keyBoardEvent)
+})
+onDeactivated(() => {
+  document.removeEventListener('keydown', keyBoardEvent)
+})
+
 watch(
   () => getControllerStore.playingUrl,
   () => {
@@ -161,7 +176,7 @@ watch(
   .fullScreenButton
   .closeButton
     position absolute
-    width 30px
+    width auto
     height 30px
     padding 10px
     border-radius 10px
@@ -171,21 +186,29 @@ watch(
     opacity 0.7
     &:hover
       background-color rgba(255,255,255,.4)
-      width 100px
       opacity 1
       span
         opacity 1
+        width 80px
+        flex 1 0 80px
     img
       height 100%
       flex 0 0 auto
     span
-      flex 0 0 auto
+      flex 1 0 0
+      //display flex
+      //justify-content space-between
+      text-align-last justify
+      text-align justify
       font-weight bold
+      width 0
       padding 10px
       box-sizing border-box
       opacity 0
       transition all 0.3s
       color #666666
+      overflow hidden
+      white-space nowrap
   .fullScreenButton
     top 30px
     right 30px
@@ -261,10 +284,10 @@ watch(
       flex 1 0 5.4vh
     .lyric.light
       filter none
-      font-size 5vh
-      line-height 8.4vh
+      font-size 4.5vh
+      line-height 7.9vh
       font-weight bold
-      flex 1 0 8.4vh
+      flex 1 0 vh
     .blank
       height 30vh
       flex 1 0 30vh
@@ -274,11 +297,12 @@ watch(
     left 0
     width 100%
     height 100%
-    filter blur(6px)
+    z-index -2
+  .backImage
+    background-blend-mode darken
+    filter grayscale(0.7)
+    background-color rgba(0, 0, 0, 0.4)
+    opacity 0.7
     background-size cover
     background-position center center
-    z-index -2
-    opacity 0.7
-    background-color rgba(0, 0, 0, 0.4)
-    background-blend-mode darken
 </style>

@@ -8,6 +8,7 @@ import {
   scanMusicByPath
 } from './fs'
 import * as serve from './serve'
+import { getFrame } from './utils'
 let controller
 contextBridge.exposeInMainWorld('electron', electronAPI)
 contextBridge.exposeInMainWorld('underlying', {
@@ -36,7 +37,8 @@ contextBridge.exposeInMainWorld('underlying', {
   scanMusicByPath,
   getPlayUrl,
   getMusicInfo,
-  confirmFileAccess
+  confirmFileAccess,
+  getFrame
 })
 contextBridge.exposeInMainWorld('serve', {
   ...serve

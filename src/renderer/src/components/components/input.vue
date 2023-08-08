@@ -1,6 +1,6 @@
 <template lang="pug">
-.input(@click="setFocus")
-  input.inputArea(v-if="inputShow" ref="inputAreaIns" :value="props.value" @blur="blur" @change="blur")
+.input(@click.stop="setFocus")
+  input.inputArea(v-if="inputShow" ref="inputAreaIns" :value="value" @blur="blur")
   span(v-else) {{value}}
 </template>
 
@@ -22,11 +22,15 @@ const blur = (e) => {
   if (e.target.value !== props.value) {
     let v = e.target.value
     if (props.mode === 'number') {
-      if (props.max !== undefined) {
-        v = Math.min(props.max, +v)
-      }
-      if (props.min !== undefined) {
-        v = Math.max(props.min, +v)
+      if (isNaN(+v)) {
+        v = props.value
+      } else {
+        if (props.max !== undefined) {
+          v = Math.min(props.max, +v)
+        }
+        if (props.min !== undefined) {
+          v = Math.max(props.min, +v)
+        }
       }
     }
     emits('update:value', v)
@@ -45,6 +49,7 @@ const blur = (e) => {
   text-align center
   line-height 20px
   .inputArea
+    //display none
     width 40px
     padding 0
     border 0
