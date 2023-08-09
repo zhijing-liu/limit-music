@@ -1,9 +1,9 @@
 <template lang="pug">
 audio(
-  :src="musicData"
+  v-show="false"
+  :src="`atom://${getControllerStore.playingUrl}`"
   ref="audioIns"
   @loadeddata="onLoaded"
-  autoplay="false"
   @play="onPlay"
   @pause="onPause"
   @ended="onEnded"
@@ -20,12 +20,16 @@ const audioIns = ref()
 const musicData = ref()
 // 监听事件
 
-const onLoaded = () => {}
+const onLoaded = () => {
+  if (getSettingStore.playImmediate || getControllerStore.isPlaying) {
+    play()
+  }
+}
 const onPlay = () => {
   getControllerStore.isPlaying = true
 }
-const onPause = () => {
-  getControllerStore.isPlaying = false
+const onPause = (e) => {
+  getControllerStore.isPlaying = e.target.ended
 }
 const onEnded = () => {
   emits('playEnd')
@@ -37,16 +41,12 @@ const onVolumeChange = () => {
 // 触发事件
 const play = async () => {
   if (getControllerStore.playingUrl) {
-    if (!(musicData.value ?? false)) {
-      await loadData()
-    }
     audioIns.value.play()
   }
 }
 const pause = () => {
   audioIns.value.pause()
 }
-const setDefault = () => {}
 const setCurrent = (current) => {
   if (musicData.value !== '') {
     audioIns.value.currentTime = current ?? 0
@@ -59,31 +59,12 @@ const setVolume = (volume) => {
     onVolumeChange()
   }
 }
-const loadData = async () => {
-  musicData.value = URL.createObjectURL(
-    new File(
-      [(await window.underlying.getPlayUrl(getControllerStore.playingUrl)).buffer],
-      getControllerStore.playingUrl
-    )
-  )
-}
 defineExpose({
   play,
   pause,
   setCurrent,
   setVolume
 })
-watch(
-  computed(() => getControllerStore.playingUrl),
-  async () => {
-    if (getControllerStore.playingUrl) {
-      await loadData()
-    }
-  },
-  {
-    immediate: getSettingStore.playImmediate
-  }
-)
 // 高频率刷新current
 const onCurrentUpdate = () => {
   getControllerStore.current = audioIns.value.currentTime
@@ -107,7 +88,4 @@ watch(
 )
 </script>
 
-<style scoped lang="stylus">
-audio
-  display none
-</style>
+<style scoped lang="stylus"></style>

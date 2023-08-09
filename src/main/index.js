@@ -8,26 +8,31 @@ import {
   Tray,
   Menu,
   Notification,
+  protocol,
   globalShortcut
 } from 'electron'
-import { join } from 'node:path'
+import { join, normalize } from 'node:path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import logo from '../../resources/logo.png?asset'
 import icon from '../../build/icon.png?asset'
 
 let tray
 let mainWindow
 async function createWindow() {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize
+  const contentWidth =
+    screen.getPrimaryDisplay().workAreaSize.width * (!app.isPackaged ? 0.75 : 0.5)
   mainWindow = new BrowserWindow({
-    width: screen.getPrimaryDisplay().workAreaSize.width * (!app.isPackaged ? 0.75 : 0.5),
-    height: screen.getPrimaryDisplay().workAreaSize.height * 0.75,
+    width: !app.isPackaged
+      ? width * 0.75
+      : Math.max(Math.min(contentWidth, width * 0.75), width * 0.5),
+    height: height * 0.75,
     minWidth: 800,
     minHeight: 600,
     show: false,
     frame: false,
-    icon: logo,
+    icon,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon: logo } : {}),
+    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -132,7 +137,9 @@ app.whenReady().then(async () => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
-
+  protocol.registerFileProtocol('atom', (request, callback) => {
+    callback(decodeURI(normalize(request.url.slice(7))))
+  })
   await createWindow()
 
   app.on('activate', () => {

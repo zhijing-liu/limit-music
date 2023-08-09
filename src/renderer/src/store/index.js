@@ -98,6 +98,7 @@ export const controllerStore = defineStore('controller', {
   actions: {
     setPlayIndex(index) {
       this.playingUrl = this.getMusicPlayList[index].path
+      this.isPlaying = true
     },
     async setMusicMap(map) {
       await this.musicInfoDb.musicItem.bulkPut(Object.values(map))

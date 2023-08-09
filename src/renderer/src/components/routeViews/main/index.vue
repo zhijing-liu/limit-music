@@ -65,6 +65,7 @@ const router = useRouter()
 const playMusic = (item) => {
   if (item.access) {
     getControllerStore.playingUrl = item.path
+    getControllerStore.isPlaying = true
   }
 }
 const toScan = () => {

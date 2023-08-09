@@ -1,5 +1,5 @@
 // 获取屏幕刷新率
-export const getFrame = async () =>
+export const getFrame = async (precision = false) =>
   new Promise((resolve) => {
     let time = 0
     const RAF = () =>
@@ -9,6 +9,6 @@ export const getFrame = async () =>
       })
     let RAFIns = RAF()
     setTimeout(() => {
-      resolve(Math.round(time / 5) * 5)
+      resolve(precision ? time : Math.round(time / 5) * 5)
     }, 1000)
   })

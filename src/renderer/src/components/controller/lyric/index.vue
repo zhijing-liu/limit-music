@@ -32,23 +32,13 @@
 </template>
 
 <script setup>
-import {
-  computed,
-  onActivated,
-  onBeforeUnmount,
-  onDeactivated,
-  onMounted,
-  onUnmounted,
-  ref,
-  watch,
-  watchEffect
-} from 'vue'
+import { computed, onActivated, onDeactivated, ref, watch, watchEffect } from 'vue'
 import { controllerStore, settingStore } from '@/store'
 import downImage from '@/assets/img/down.png'
 import fullScreenImage from '@/assets/img/fullScreen.png'
 import arrowHeadRightImage from '@/assets/img/arrowHeadRight.png'
 import { windowHandler } from '@/methods'
-import Streamer from './components/streamer.vue'
+import Streamer from './components/streamer/index.vue'
 const props = defineProps(['musicInfo', 'visible'])
 
 const emits = defineEmits([
