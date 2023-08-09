@@ -163,6 +163,9 @@ watch(
     getControllerStore.controllerServer?.updateSocket?.('playMode', getControllerStore.playMode)
   }
 )
+watch(lyricVisible, () => {
+  getControllerStore.controllerServer?.updateSocket?.('lyricVisible', lyricVisible.value)
+})
 
 // 控制器中间鼠标事件控制模块
 const centerActive = ref(false)
@@ -186,13 +189,17 @@ const getController = () => ({
     musicInfo: toRaw(musicInfo.value),
     isPlaying: getControllerStore.isPlaying,
     playMode: getControllerStore.playMode,
-    volume: getControllerStore.volume
+    volume: getControllerStore.volume,
+    lyricVisible: lyricVisible.value
   }),
   setPlayMode,
   setPlayingUrl: (value) => {
     getControllerStore.playingUrl = value
   },
-  getMusicMap: () => toRaw(getControllerStore.musicMap)
+  getMusicMap: () => toRaw(getControllerStore.musicMap),
+  setDisplayLyric: (value) => {
+    lyricVisible.value = value
+  }
 })
 // 外部控制器监听模块
 watch(
