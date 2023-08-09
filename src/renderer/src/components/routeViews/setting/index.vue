@@ -162,7 +162,7 @@ const settingGroups = reactive({
         max: 65534
       },
       {
-        label: '网络控制服务端口',
+        label: '网络控制socket服务端口',
         index: 'webServe-5',
         value: computed({
           get: () => getSettingStore.webControllerSocketPort,

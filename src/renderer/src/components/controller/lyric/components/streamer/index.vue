@@ -7,7 +7,7 @@ import { computed, onActivated, onDeactivated, reactive, ref, watch } from 'vue'
 import { settingStore } from '@/store'
 import starImage from '@/assets/img/star.png'
 import snowImage from '@/assets/img/snow.png'
-import CanvasRendererFn from './canvasRenderer.js?worker'
+import CanvasRendererFn from '@/worker/canvasRenderer.js?worker'
 import { Worker } from '@/worker/index.js'
 
 const getSettingStore = settingStore()

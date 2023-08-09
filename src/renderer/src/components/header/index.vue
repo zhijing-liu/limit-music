@@ -59,6 +59,8 @@ const clickLogo = () => {
     padding 8px
     border-radius 8px
     transition background-color 0.8s
+    display flex
+    align-items center
     &:hover
       background-color rgba(144,144,144,.12)
   .rightButtons
@@ -72,5 +74,5 @@ const clickLogo = () => {
         width 100%
         height 100%
       &:hover
-        background-color rgba(144,144,144,.2)
+        background-color rgba(245,150,170,.2)
 </style>

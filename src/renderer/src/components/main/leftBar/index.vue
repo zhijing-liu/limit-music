@@ -69,7 +69,6 @@ const routerPush = (item) => {
   #leftBarBody
     flex 1 0 0
     margin 0 5px
-    background-color rgba(144,144,144,.05)
     border-radius 15px
     display flex
     flex-direction column
@@ -80,20 +79,24 @@ const routerPush = (item) => {
       align-items center
       border-radius 8px
       margin-bottom 10px
-      background-color rgba(120,194,196,.1)
+      background-color rgba(120,194,196,.2)
       justify-self flex-end
+      transition all 0.4s
       &:hover
-        background-color rgba(120,194,196,.3)
+        background-color rgba(120,194,196,.4)
       .icon
         width 25px
         height 25px
         padding 0 10px
       .label
         font-size 14px
+        transition all 0.4s
         font-weight bold
     .item.active
-      color #FFFFFF
-      background-color rgba(120,194,196,.8)
+      background-color rgba(120,194,196,.7)
+      height 60px
+      .label
+        color #FFFFFF
   #leftBarBody.ended
     flex-direction column-reverse
 </style>

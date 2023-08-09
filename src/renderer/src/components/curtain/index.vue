@@ -101,7 +101,8 @@ watch(
   justify-content center
   align-items center
   .logo
-    height 30vh
+    height 20vh
+    margin-bottom 5vh
     animation reverse-bounce 1.5s infinite
   .mainTitle
     font-size 10vh

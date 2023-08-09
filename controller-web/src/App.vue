@@ -6,12 +6,16 @@
   )
   .title {{musicData?.musicInfo?.title}}
   .subTitle {{musicData?.musicInfo?.artists?.join(' ')}}
-  img.album(:src="musicData?.musicInfo?.albumPic??musicImage")
+  img.album(
+    :src="musicData?.musicInfo?.albumPic??musicImage"
+    @click="setDisplayLyric"
+    @touchstart.stop
+    )
   .buttons
-    img.button(:src="listImage" @click="musicListIns.setVisible" @touchstart.stop @touchmove.stop @touchend.stop)
+    img.button(:src="listImage" @click="musicListIns.setVisible" @touchstart.stop)
     .slider(ref="sliderIns")
       img.button(:src="musicData?.isPlaying?pauseImage:playImage" :style="sliderStyle" @touchstart="sliderMouseDown")
-    img.button(:src="playModeMap[musicData?.playMode??'default']" @click="setPlayMode" @touchstart.stop @touchmove.stop @touchend.stop)
+    img.button(:src="playModeMap[musicData?.playMode??'default']" @click="setPlayMode" @touchstart.stop)
     //img.button(:src="playModeMap[musicData?.playMode??'default']" @click="setDisplayLyric")
 Transition(name="fullDown-quick")
   #curtain(v-show="!connecting")
@@ -234,6 +238,7 @@ const sliderMouseDown = (event) => {
     box-shadow 0 0 10px 10px #AAAAAA
   .buttons
     display flex
+    margin-bottom 10vh
     .button
       margin 0 3vw
       width 12vw

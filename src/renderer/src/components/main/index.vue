@@ -16,9 +16,12 @@ import LeftBar from './leftBar/index.vue'
   flex 1 0 0
   overflow hidden
   display flex
+  border-radius 20px 20px 0 0
+  background-color: #fff
   .body
     flex 1 0 0
     overflow hidden
     display flex
     flex-direction column
+    margin 10px 0
 </style>

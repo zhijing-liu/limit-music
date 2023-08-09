@@ -250,8 +250,8 @@ onMounted(() => {
   justify-content center
   padding 10px 5vw
   border-radius 15px
-  background-color rgba(46,169,223,.2)
-  margin-top 10px
+  background-color #c4e3e0
+  //margin-top 10px
   .album
     height 60px
     width 60px
