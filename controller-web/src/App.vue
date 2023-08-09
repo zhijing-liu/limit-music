@@ -1,8 +1,6 @@
 <template lang="pug">
 #controller(
   @touchstart.prevent="touchstart"
-  @touchmove.prevent="touchmove"
-  @touchend.prevent="touchend"
   ref="controllerIns"
   :style="`background:linear-gradient(to top ,#b8d8ed 0,#b8d8ed ${musicData?.volume??50}%,#FFFFFF ${musicData?.volume??50}%,#FFFFFF 100%);`"
   )
@@ -11,12 +9,8 @@
   img.album(:src="musicData?.musicInfo?.albumPic??musicImage")
   .buttons
     img.button(:src="listImage" @click="musicListIns.setVisible" @touchstart.stop @touchmove.stop @touchend.stop)
-    //img.button(:src="lastImage" @click="last")
     .slider(ref="sliderIns")
       img.button(:src="musicData?.isPlaying?pauseImage:playImage" :style="sliderStyle" @touchstart="sliderMouseDown")
-    //img.button(v-if="musicData?.isPlaying" :src="pauseImage" @click="pause")
-    //img.button(:src="playImage" @click="play" v-else)
-    //img.button(:src="nextImage" @click="next")
     img.button(:src="playModeMap[musicData?.playMode??'default']" @click="setPlayMode" @touchstart.stop @touchmove.stop @touchend.stop)
     //img.button(:src="playModeMap[musicData?.playMode??'default']" @click="setDisplayLyric")
 Transition(name="fullDown-quick")
@@ -50,23 +44,30 @@ const musicListIns = ref({})
 const touchstartData = {}
 const controllerIns = ref()
 const touchstart = (e) => {
-  touchstartData.y = e.targetTouches[0].pageY
-  touchstartData.volume = musicData.value.volume
-  touchstartData.height = document.body.getBoundingClientRect().height
-}
-const touchmove = (e) => {
   if (e.target === controllerIns.value) {
-    const v = ((e.targetTouches[0].pageY - touchstartData.y) / touchstartData.height) * 250
-    musicData.value.volume = Math.min(Math.max(0, touchstartData.volume - v), 100)
+    touchstartData.y = e.targetTouches[0].pageY
+    touchstartData.volume = musicData.value.volume
+    touchstartData.height = document.body.getBoundingClientRect().height
+    const touchMove = (e) => {
+      const v = ((e.targetTouches[0].pageY - touchstartData.y) / touchstartData.height) * 250
+      musicData.value.volume = Math.min(Math.max(0, touchstartData.volume - v), 100)
+      e.preventDefault()
+    }
+    const touchEnd = (e) => {
+      musicData.value.volume = Math.round(musicData.value.volume)
+      axios.post('/action', {
+        action: 'setVolume',
+        args: [musicData.value.volume]
+      })
+      controllerIns.value.removeEventListener('touchmove', touchMove)
+      controllerIns.value.removeEventListener('touchend', touchEnd)
+      e.preventDefault()
+    }
+    controllerIns.value.addEventListener('touchmove', touchMove)
+    controllerIns.value.addEventListener('touchend', touchEnd)
   }
 }
-const touchend = () => {
-  musicData.value.volume = Math.round(musicData.value.volume)
-  axios.post('/action', {
-    action: 'setVolume',
-    args: [musicData.value.volume]
-  })
-}
+
 const play = () => {
   axios.post('/action', {
     action: 'play'
@@ -177,11 +178,12 @@ const sliderMouseDown = (event) => {
   const end = (e) => {
     controllerIns.value.removeEventListener('touchmove', move)
     controllerIns.value.removeEventListener('touchend', end)
+    console.log(sliderOffset.value)
     if (sliderOffset.value < left * 100 + 5) {
       last()
     } else if (sliderOffset.value > right * 100 - 5) {
       next()
-    } else if (sliderOffset.value > 45 && sliderOffset.value < 55) {
+    } else if (sliderOffset.value >= 49 && sliderOffset.value <= 51) {
       musicData.value?.isPlaying ? pause() : play()
     }
     drag.value = false

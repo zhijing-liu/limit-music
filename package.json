@@ -1,6 +1,6 @@
 {
   "name": "limit-music",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "limit-music 年轻人的第一个音乐播放器",
   "main": "./out/main/index.js",
   "author": "纸境工作室",
@@ -13,7 +13,7 @@
     "build-web": "npm run build --prefix=./controller-web",
     "build": "electron-vite build",
     "postinstall": "electron-builder install-app-deps",
-    "build:win": "npm run build --prefix=./controller-web && npm run build && electron-builder --win --config",
+    "build:win": "pnpm build-web && npm run build && electron-builder --win --config",
     "build:mac": "npm run build && electron-builder --mac --config",
     "build:linux": "npm run build && electron-builder --linux --config",
     "install-tools": "node ./tools/prepare.mjs",
