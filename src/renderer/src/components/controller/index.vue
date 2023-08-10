@@ -163,6 +163,12 @@ watch(
     getControllerStore.controllerServer?.updateSocket?.('playMode', getControllerStore.playMode)
   }
 )
+watch(
+  computed(() => Math.round(getControllerStore.current * 2) / 2),
+  () => {
+    getControllerStore.controllerServer?.updateSocket?.('current', getControllerStore.current)
+  }
+)
 watch(lyricVisible, () => {
   getControllerStore.controllerServer?.updateSocket?.('lyricVisible', lyricVisible.value)
 })
@@ -190,16 +196,19 @@ const getController = () => ({
     isPlaying: getControllerStore.isPlaying,
     playMode: getControllerStore.playMode,
     volume: getControllerStore.volume,
-    lyricVisible: lyricVisible.value
+    lyricVisible: lyricVisible.value,
+    current: getControllerStore.current
   }),
   setPlayMode,
   setPlayingUrl: (value) => {
     getControllerStore.playingUrl = value
   },
-  getMusicMap: () => toRaw(getControllerStore.musicMap),
+  getMusicList: () =>
+    Object.values(toRaw(getControllerStore.musicMap)).map(({ path, title }) => ({ path, title })),
   setDisplayLyric: (value) => {
     lyricVisible.value = value
-  }
+  },
+  setCurrent: setProgress
 })
 // 外部控制器监听模块
 watch(

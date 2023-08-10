@@ -13,17 +13,21 @@
     "build-web": "npm run build --prefix=./controller-web",
     "build": "electron-vite build",
     "postinstall": "electron-builder install-app-deps",
-    "build:win": "pnpm build-web && npm run build && electron-builder --win --config",
+    "build:win": "pnpm build-web && pnpm build && electron-builder --win --config",
     "build:mac": "npm run build && electron-builder --mac --config",
     "build:linux": "npm run build && electron-builder --linux --config",
     "install-tools": "node ./tools/prepare.mjs",
     "build-tools": "webpack --config ./tools/webpack.config.mjs"
   },
   "build": {
+    "appId": "com.limit-music.app",
     "productName": "limit 音乐",
+    "compression": "store",
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "deleteAppDataOnUninstall": true,
       "createDesktopShortcut": "always",
       "runAfterFinish": true,
       "shortcutName": "limit 音乐"
@@ -44,7 +48,8 @@
     "pinia": "^2.1.6",
     "qrcode": "^1.5.3",
     "socket.io": "^4.7.2",
-    "vue-router": "^4.2.4"
+    "vue-router": "^4.2.4",
+    "compression": "^1.7.4"
   },
   "devDependencies": {
     "@electron/notarize": "^1.2.4",

@@ -134,6 +134,9 @@ const keyBoardEvent = (e) => {
 }
 onActivated(() => {
   document.addEventListener('keydown', keyBoardEvent)
+  lyricIns.value?.scrollIntoView({
+    block: 'center'
+  })
 })
 onDeactivated(() => {
   document.removeEventListener('keydown', keyBoardEvent)

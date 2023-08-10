@@ -11,7 +11,7 @@ audio(
   )
 </template>
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { controllerStore, settingStore } from '@/store'
 const emits = defineEmits(['currentChanged', 'playEnd', 'volumeChanged'])
 const getControllerStore = controllerStore()
@@ -24,6 +24,7 @@ const onLoaded = () => {
   if (getSettingStore.playImmediate || getControllerStore.isPlaying) {
     play()
   }
+  setPlaybackRate()
 }
 const onPlay = () => {
   getControllerStore.isPlaying = true
@@ -59,6 +60,15 @@ const setVolume = (volume) => {
     onVolumeChange()
   }
 }
+const setPlaybackRate = (value = getSettingStore.playSpeed) => {
+  audioIns.value.playbackRate = value
+}
+watch(
+  computed(() => getSettingStore.playSpeed),
+  () => {
+    setPlaybackRate()
+  }
+)
 defineExpose({
   play,
   pause,

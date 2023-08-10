@@ -118,6 +118,7 @@ export const componentVisibleStore = defineStore('componentVisible', {
 const settings = {
   deepScan: false,
   playImmediate: false,
+  playSpeed: 1,
   toTrayWhenClickClose: true,
   webServeEnable: true,
   webServePort: 4000,

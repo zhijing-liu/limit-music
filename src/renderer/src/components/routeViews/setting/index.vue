@@ -95,6 +95,18 @@ const settingGroups = reactive({
         unit: 'ms',
         min: 20,
         max: 300
+      },
+      {
+        label: '播放速度',
+        index: 'play-4',
+        value: computed({
+          get: () => getSettingStore.playSpeed,
+          set: (v) => (getSettingStore.playSpeed = v)
+        }),
+        type: 'input',
+        mode: 'number',
+        min: 0.5,
+        max: 2
       }
     ]
   },
@@ -291,10 +303,12 @@ watch(getSettingStore, () => {
           font-size 13px
           padding 0 6px
           font-weight bolder
+      .tab:hover,
       .tab.active
         padding 0 30px
-        background-color rgba(225,107,140,.08)
-        box-shadow 0 0 10px 5px rgba(225,107,140,.05)
+        height 45px
+        background-color rgba(225,107,140,.2)
+        //box-shadow 0 0 10px 5px rgba(225,107,140,.05)
   #settingBody
     flex 1 0 0
     overflow auto

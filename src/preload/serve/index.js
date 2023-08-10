@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-
+import compression from 'compression'
 import { createSocket } from './socket.js'
 import net from 'node:net'
 import { join } from 'node:path'
@@ -99,6 +99,7 @@ class ControllerServer {
     this.app.use('/socket.io', (...arg) => {
       this.handler?.(...arg)
     })
+    this.app.use(compression())
     this.app.get('/controller/?*', (req, res) => {
       const url = join(__dirname, '../../public/static', req.params[0])
       if (statSync(url).isFile()) {

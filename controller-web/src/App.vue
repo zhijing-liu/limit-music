@@ -11,12 +11,15 @@
     @click="setDisplayLyric"
     @touchstart.stop
     )
+  .controllerBar(ref="controllerBarIns")
+    .block(:style="`left:${current}%`" @touchstart.stop="controllerBarTouchStart")
+      .line
+      .line
   .buttons
     img.button(:src="listImage" @click="musicListIns.setVisible" @touchstart.stop)
     .slider(ref="sliderIns")
       img.button(:src="musicData?.isPlaying?pauseImage:playImage" :style="sliderStyle" @touchstart="sliderMouseDown")
     img.button(:src="playModeMap[musicData?.playMode??'default']" @click="setPlayMode" @touchstart.stop)
-    //img.button(:src="playModeMap[musicData?.playMode??'default']" @click="setDisplayLyric")
 Transition(name="fullDown-quick")
   #curtain(v-show="!connecting")
     img.icon(:src="iconImage")
@@ -31,8 +34,6 @@ import { computed, reactive, ref, watch, nextTick } from 'vue'
 import playImage from '@/assets/img/play.png'
 import listImage from '@/assets/img/list.png'
 import pauseImage from '@/assets/img/pause.png'
-import lastImage from '@/assets/img/last.png'
-import nextImage from '@/assets/img/next.png'
 import musicImage from '@/assets/img/music.png'
 import defaultImage from '@/assets/img/default.png'
 import randomImage from '@/assets/img/random.png'
@@ -111,6 +112,47 @@ const getAllData = async () => {
   })
   musicData.value = result
 }
+const currentChanging = ref(false)
+let allowRefreshCurrent = true
+const currentOffset = ref(0)
+const current = computed(() => {
+  return (
+    (currentChanging.value
+      ? currentOffset.value
+      : musicData.value.current / musicData.value.musicInfo?.duration ?? 100) * 100
+  )
+})
+const setCurrent = (value) => {
+  axios.post('/action', {
+    action: 'setCurrent',
+    args: [value]
+  })
+}
+const controllerBarIns = ref()
+const controllerBarTouchStart = (event) => {
+  currentChanging.value = true
+  allowRefreshCurrent = false
+  const rect = controllerBarIns.value.getBoundingClientRect()
+  const unitRect = event.target.getBoundingClientRect()
+  const setOffset = (x) => {
+    currentOffset.value = Math.min(Math.max((x - rect.x) / rect.width, 0), 1)
+  }
+  const move = (e) => {
+    const x =
+      e.targetTouches[0].screenX - event.targetTouches[0].screenX + unitRect.x + unitRect.width / 2
+    setOffset(x)
+  }
+  move(event)
+  const end = (e) => {
+    controllerIns.value.removeEventListener('touchmove', move)
+    controllerIns.value.removeEventListener('touchend', end)
+    const currentValue = currentOffset.value * musicData.value.musicInfo.duration
+    allowRefreshCurrent = true
+    setCurrent(currentValue)
+  }
+  controllerIns.value.addEventListener('touchmove', move)
+  controllerIns.value.addEventListener('touchend', end)
+}
 const playSocketIns = ref()
 const connectError = ref(false)
 const createSocket = () => {
@@ -145,6 +187,12 @@ const createSocket = () => {
     })
     .on('lyricVisible', (data) => {
       musicData.value.lyricVisible = data
+    })
+    .on('current', (data) => {
+      if (allowRefreshCurrent) {
+        musicData.value.current = data
+        currentChanging.value = false
+      }
     })
     .connect()
 }
@@ -182,7 +230,6 @@ const sliderMouseDown = (event) => {
   const end = (e) => {
     controllerIns.value.removeEventListener('touchmove', move)
     controllerIns.value.removeEventListener('touchend', end)
-    console.log(sliderOffset.value)
     if (sliderOffset.value < left * 100 + 5) {
       last()
     } else if (sliderOffset.value > right * 100 - 5) {
@@ -236,6 +283,35 @@ const sliderMouseDown = (event) => {
     margin-bottom 10vh
     border-radius 10px
     box-shadow 0 0 10px 10px #AAAAAA
+  .controllerBar
+    width 80vw
+    height 8px
+    background-color #67d1f3
+    margin 3vh  0
+    border 2px solid #000000
+    border-radius 10px
+    position relative
+    .block
+      width 40px
+      position absolute
+      height 18px
+      background-color #36c8f6
+      font-size 2px
+      top -7px
+      border-radius 8px
+      border 2px solid #000000
+      transform translateX(-50%)
+      display flex
+      justify-content space-evenly
+      align-items center
+      .line
+        height 50%
+        width 2px
+        background-color #222222
+      &:hover
+        height 22px
+        top -9px
+        width 44px
   .buttons
     display flex
     margin-bottom 10vh

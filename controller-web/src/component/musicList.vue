@@ -5,12 +5,12 @@ Transition(name="fade" @after-enter="afterEnter")
       .title 音乐列表
       .list
         .item(
-          v-for="(item,path) in musicMap"
+          v-for="{path,title} in musicList"
           :class="{active:path===playingUrl}"
           :key="path"
           :ref="(ins)=>path===playingUrl&&(activeIns=ins)"
           @click="()=>setPlayingUrl(path)"
-          ) {{item.title}}
+          ) {{title}}
 </template>
 
 <script setup>
@@ -20,14 +20,14 @@ import axios from 'axios'
 const activeIns = ref()
 const visible = ref(false)
 const props = defineProps(['playingUrl', 'connecting'])
-const musicMap = ref({})
+const musicList = ref([])
 const getList = async () => {
   const {
     data: { result }
   } = await axios.post('/action', {
-    action: 'getMusicMap'
+    action: 'getMusicList'
   })
-  musicMap.value = result
+  musicList.value = result
 }
 const setPlayingUrl = (path) => {
   axios.post('/action', {
