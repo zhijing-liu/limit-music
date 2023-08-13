@@ -22,7 +22,6 @@
       v-for="({time,lyric},index) in musicInfo.lyricList"
       :class="{light:index===step}"
       :key="index"
-      :style="`filter:blur(${(Math.abs(index-step))/3}px);`"
       :ref="(el)=>index===step&&(lyricIns=el)"
       @click.stop="()=>changeProgress((time + 1) / 1000)"
     ) {{ lyric||'- -' }}`
@@ -273,14 +272,14 @@ watch(
       text-align center
       line-height 5.4vh
       font-size 3vh
-      filter blur(1px)
+      opacity 0.5
       flex 1 0 5.4vh
     .lyric.light
-      filter none
       font-size 4.5vh
       line-height 7.9vh
       font-weight bold
       flex 1 0 vh
+      opacity 1
     .blank
       height 30vh
       flex 1 0 30vh

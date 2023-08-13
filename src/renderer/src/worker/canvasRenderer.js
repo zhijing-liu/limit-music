@@ -22,43 +22,45 @@ const canvasRenderer = new OffscreenCanvas(
   renderData.canvasRect.height
 )
 const drawRainUnit = (ctx, data) => {
-  data.y += 0.003 * data.size * renderData.speed
-  const { size, x, y } = data
-  ctx.fillStyle = 'rgba(165,222,228,.5)'
+  ctx.fillStyle = 'rgba(255,255,255,.5)'
   if (renderData.blur) {
-    ctx.filter = `blur(${3 - size}px)`
+    ctx.filter = `blur(${3 - data.size}px)`
   }
-  ctx.fillRect(x * renderData.canvasRect.width, y * renderData.canvasRect.height, size, 5 * size)
+  ctx.fillRect(
+    data.x * renderData.canvasRect.width,
+    (data.y + ((data.size * renderData.speed) / 2000) * (Date.now() - data.t)) *
+      renderData.canvasRect.height,
+    data.size,
+    5 * data.size
+  )
 }
 const drawStarUnit = (ctx, data) => {
-  data.y += 0.001 * data.size * renderData.speed
-  data.x -= 0.0003 * data.size * renderData.speed
-  const { size, x, y } = data
   if (renderData.blur) {
-    ctx.filter = `blur(${3 - size}px)`
+    ctx.filter = `blur(${3 - data.size}px)`
   }
   ctx.drawImage(
     renderData.starImageBitMap,
-    x * renderData.canvasRect.width * 1.5,
-    y * renderData.canvasRect.height,
-    5 * size,
-    5 * size
+    (data.x - ((data.size * renderData.speed) / 30000) * (Date.now() - data.t)) *
+      renderData.canvasRect.width,
+    (data.y + ((data.size * renderData.speed) / 10000) * (Date.now() - data.t)) *
+      renderData.canvasRect.height,
+    5 * data.size,
+    5 * data.size
   )
 }
 
 const drawSnowUnit = (ctx, data) => {
-  data.y += 0.001 * data.size * renderData.speed
-  data.x -= 0.0003 * data.size * renderData.speed * data.skew
-  const { size, x, y } = data
   if (data.blur) {
-    ctx.filter = `blur(${3 - size}px)`
+    ctx.filter = `blur(${3 - data.size}px)`
   }
   ctx.drawImage(
     renderData.snowImageBitMap,
-    x * renderData.canvasRect.width * 1.5,
-    y * renderData.canvasRect.height,
-    5 * size,
-    5 * size
+    (data.x - ((data.size * renderData.speed) / 30000) * (Date.now() - data.t) * data.skew) *
+      renderData.canvasRect.width,
+    (data.y + ((data.size * renderData.speed) / 10000) * (Date.now() - data.t)) *
+      renderData.canvasRect.height,
+    5 * data.size,
+    5 * data.size
   )
 }
 const drawMap = {
@@ -89,13 +91,14 @@ const eventMap = {
       canvasRendererCtx.clearRect(0, 0, renderData.canvasRect.width, renderData.canvasRect.height)
       canvasRenderer.width = renderData.canvasRect.width
       t++
-      if (t % 10 === 0) {
+      if (t % 20 === 0) {
         for (let i = 0; i < renderData.count; i++) {
           streamerUnits[new Date().getTime() + i] = {
             x: Math.random(),
             y: -0.1,
             size: Math.random() * 2 + 0.5,
-            skew: Math.random()
+            skew: Math.random() - 0.5,
+            t: Date.now()
           }
         }
       }

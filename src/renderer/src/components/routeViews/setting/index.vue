@@ -142,6 +142,7 @@ const settingGroups = reactive({
       {
         label: '网络服务端口',
         index: 'webServe-2',
+        hide: computed(() => !getSettingStore.webServeEnable),
         value: computed({
           get: () => getSettingStore.webServePort,
           set: (v) => (getSettingStore.webServePort = isNaN(+v) ? 4000 : +v)
@@ -164,6 +165,7 @@ const settingGroups = reactive({
       {
         label: '网络控制服务端口',
         index: 'webServe-4',
+        hide: computed(() => !getSettingStore.webControllerEnable),
         value: computed({
           get: () => getSettingStore.webControllerPort,
           set: (v) => (getSettingStore.webControllerPort = isNaN(+v) ? 10000 : +v)
@@ -176,6 +178,7 @@ const settingGroups = reactive({
       {
         label: '网络控制socket服务端口',
         index: 'webServe-5',
+        hide: computed(() => !getSettingStore.webControllerEnable),
         value: computed({
           get: () => getSettingStore.webControllerSocketPort,
           set: (v) => (getSettingStore.webControllerSocketPort = isNaN(+v) ? 20000 : +v)
@@ -188,6 +191,7 @@ const settingGroups = reactive({
       {
         label: '使用公网ipv6进行配置',
         index: 'webServe-6',
+        hide: computed(() => !getSettingStore.webControllerEnable),
         value: computed({
           get: () => getSettingStore.webControllerUsePublicIPv6,
           set: (v) => (getSettingStore.webControllerUsePublicIPv6 = v)
@@ -230,6 +234,7 @@ const settingGroups = reactive({
       {
         label: '流光数量',
         index: 'colorful-2',
+        hide: computed(() => getSettingStore.streamerType === 'none'),
         value: computed({
           get: () => {
             return getSettingStore.streamerCount
@@ -244,6 +249,7 @@ const settingGroups = reactive({
       {
         label: '流光动态模糊',
         index: 'colorful-3',
+        hide: computed(() => getSettingStore.streamerType === 'none'),
         value: computed({
           get: () => {
             return getSettingStore.streamerBlur
@@ -256,6 +262,7 @@ const settingGroups = reactive({
       {
         label: '流光速度',
         index: 'colorful-4',
+        hide: computed(() => getSettingStore.streamerType === 'none'),
         value: computed({
           get: () => {
             return getSettingStore.streamerSpeed
