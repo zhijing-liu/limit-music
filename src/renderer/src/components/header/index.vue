@@ -44,8 +44,8 @@ const clickLogo = () => {
   justify-content space-between
   align-items center
   -webkit-app-region drag
-  *
-    -webkit-app-region no-drag
+  //*
+  //  -webkit-app-region no-drag
   .logo
     height 30px
     padding 10px

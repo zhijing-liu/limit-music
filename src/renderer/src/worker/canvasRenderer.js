@@ -41,7 +41,8 @@ const drawStarUnit = (ctx, data) => {
   ctx.drawImage(
     renderData.starImageBitMap,
     (data.x - ((data.size * renderData.speed) / 30000) * (Date.now() - data.t)) *
-      renderData.canvasRect.width,
+      renderData.canvasRect.width *
+      1.5,
     (data.y + ((data.size * renderData.speed) / 10000) * (Date.now() - data.t)) *
       renderData.canvasRect.height,
     5 * data.size,

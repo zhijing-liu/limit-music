@@ -1,7 +1,12 @@
 <template lang="pug">
 .selection(tabindex="1" ref="optionIns")
   .label {{getSelectedValue}}
-  .option(v-for="(option,index) of options.filter(({value:v})=>v!==value)" :style="`top:${(index+1)*110}%`" @click="()=>clickOption(option)") {{option.label}}
+  .options
+    .option(
+      v-for="(option,index) in options.filter(({value:v})=>v!==value)"
+      :key="index"
+      @click="()=>clickOption(option)"
+      ) {{option.label}}
 </template>
 
 <script setup>
@@ -34,27 +39,33 @@ const clickOption = (option) => {
   border-radius 6px
   white-space nowrap
   &:focus
-    .option
-      display flex
+    .options
       opacity 1
       pointer-events all
-  .option
+  .options
     position absolute
-    display flex
+    z-index 100
     opacity 0
-    pointer-events none
-    min-width 40px
-    transition all 0.3s
-    //max-width inherit
-    padding 5px 10px
-    height 20px
+    display flex
+    flex-direction column
     left 50%
     top 100%
+    margin-top 10px
+    //padding 3px
+    //padding 5px 10px
     transform translateX(-50%)
-    justify-content center
-    white-space nowrap
+    background-color #b6e8d6
+    min-width 40px
     border-radius 6px
-    background-color #d3e9e2
-    &:hover
-      background-color #b9dad0
+    transition all 0.3s
+    pointer-events none
+    overflow hidden
+    .option
+      height 20px
+      min-width 40px
+      padding 5px 10px
+      justify-content center
+      white-space nowrap
+      &:hover
+        background-color #b4dace
 </style>

@@ -60,7 +60,10 @@ const nextStep = computed(() => {
   return props.musicInfo.lyricList[start.value]?.time ?? 0
 })
 const resetStep = () => {
-  start.value = props.musicInfo.lyricList.findIndex(({ time }) => time > timeStep.value)
+  start.value =
+    timeStep.value > props.musicInfo.lyricList.at(-1).time
+      ? props.musicInfo.lyricList.length
+      : props.musicInfo.lyricList.findIndex(({ time }) => time > timeStep.value)
 }
 let lastStep = 0
 const step = computed(() => {

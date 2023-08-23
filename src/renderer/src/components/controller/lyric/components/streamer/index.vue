@@ -63,5 +63,5 @@ onDeactivated(() => {
 
 <style scoped lang="stylus">
 .streamer
-  filter blur(0px)!important
+  pointer-events none
 </style>
